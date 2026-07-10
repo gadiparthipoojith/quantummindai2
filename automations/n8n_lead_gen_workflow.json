@@ -1,0 +1,123 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "path": "lead-webhook",
+        "options": {}
+      },
+      "id": "1d8b78cf-7f9e-4c3a-8742-16a9a084c718",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "prompt": "Evaluate this lead inquiry. Determine if they have budget and need custom software. Inquiry: {{$json[\"body\"][\"inquiry\"]}}",
+        "options": {
+          "responseFormat": "json"
+        }
+      },
+      "id": "2c9e78df-8f0a-4a3b-9653-17b9b085c819",
+      "name": "AI Lead Evaluator",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-cred-id"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json[\"qualified\"]}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "3d0f89ef-9a1b-4b3c-9764-18c9c086d920",
+      "name": "Is Qualified?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "email": "={{$json[\"body\"][\"email\"]}}",
+        "fields": {
+          "name": "={{$json[\"body\"][\"name\"]}}",
+          "lead_score": "={{$json[\"score\"]}}",
+          "status": "Qualified"
+        }
+      },
+      "id": "4e1a90ff-0b2c-4c3d-9875-19d9d087e031",
+      "name": "Upsert CRM Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [850, 200]
+    },
+    {
+      "parameters": {
+        "message": "🚨 New qualified lead received: {{$json[\"body\"][\"name\"]}} from {{$json[\"body\"][\"company\"]}}. Score: {{$json[\"score\"]}}%"
+      },
+      "id": "5f2b01ff-1c3d-4c3e-9986-20e0e088f142",
+      "name": "Slack Alert",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [1050, 200]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Lead Evaluator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Lead Evaluator": {
+      "main": [
+        [
+          {
+            "node": "Is Qualified?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Qualified?": {
+      "main": [
+        [
+          {
+            "node": "Upsert CRM Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Upsert CRM Lead": {
+      "main": [
+        [
+          {
+            "node": "Slack Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
