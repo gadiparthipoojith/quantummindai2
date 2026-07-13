@@ -9,7 +9,7 @@ export function Projects() {
   const featured = projects.filter((p) => p.featured);
 
   return (
-    <section id="projects" className="section-padding bg-obsidian/30">
+    <section id="projects" className="section-padding bg-background/30">
       <div className="container mx-auto px-4 md:px-6">
         <ScrollReveal className="mx-auto mb-16 max-w-2xl text-center">
           <span className="mb-4 inline-block text-sm font-medium uppercase tracking-widest text-violet-core">
@@ -39,14 +39,14 @@ export function Projects() {
                       href={project.github}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm transition-colors hover:bg-violet-core/50"
+                      className="flex h-9 w-9 items-center justify-center rounded-lg bg-foreground/10 backdrop-blur-sm transition-colors hover:bg-violet-core/50"
                       aria-label="View on GitHub"
                     >
                       <Github className="h-4 w-4" />
                     </a>
                     <Link
                       href={project.href}
-                      className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 backdrop-blur-sm transition-colors hover:bg-violet-core/50"
+                      className="flex h-9 w-9 items-center justify-center rounded-lg bg-foreground/10 backdrop-blur-sm transition-colors hover:bg-violet-core/50"
                       aria-label="View project"
                     >
                       <ExternalLink className="h-4 w-4" />
@@ -75,7 +75,7 @@ export function Projects() {
                     {project.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="rounded-md border border-white/10 px-2 py-0.5 text-xs text-muted-foreground"
+                        className="rounded-md border border-foreground/10 px-2 py-0.5 text-xs text-muted-foreground"
                       >
                         {tag}
                       </span>

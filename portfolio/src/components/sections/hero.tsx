@@ -30,13 +30,12 @@ export function Hero() {
           </motion.div>
 
           <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            <span className="block">Intelligent Products.</span>
-            <span className="gradient-text">Engineered for Growth.</span>
+            <span className="block">We Engineer Intelligence.</span>
+            <span className="gradient-text">Elegant Software Solutions.</span>
           </h1>
 
-          <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground md:text-xl">
-            {studio.name} builds production-grade AI agents, SaaS platforms,
-            automation workflows, and data intelligence systems for ambitious teams.
+          <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground md:text-xl leading-relaxed">
+            {studio.name} is a boutique software engineering studio. We design, build, and deploy high-performance applications, AI agents, and data systems for ambitious teams worldwide.
           </p>
 
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">

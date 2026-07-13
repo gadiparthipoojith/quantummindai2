@@ -13,10 +13,12 @@ const buttonVariants = cva(
         default:
           "bg-gradient-to-r from-violet-core to-cyan-pulse text-white shadow-lg shadow-violet-core/25 hover:shadow-violet-core/40 hover:scale-[1.02]",
         secondary:
-          "glass border border-white/10 text-foreground hover:bg-white/10 hover:border-violet-core/30",
+          "glass border border-foreground/10 text-foreground hover:bg-foreground/10 hover:border-violet-core/30",
+        hoverHighlight:
+          "glass border border-foreground/10 text-foreground hover:!bg-gradient-to-r hover:!from-violet-core hover:!to-cyan-pulse hover:text-white hover:border-transparent hover:shadow-lg hover:shadow-violet-core/40 hover:scale-[1.02]",
         outline:
           "border border-violet-core/30 bg-transparent hover:bg-violet-core/10 text-foreground",
-        ghost: "hover:bg-white/5 text-foreground",
+        ghost: "hover:bg-foreground/5 text-foreground",
         link: "text-violet-core underline-offset-4 hover:underline",
       },
       size: {

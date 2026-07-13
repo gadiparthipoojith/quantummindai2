@@ -48,7 +48,7 @@ export function CaseStudies() {
                       {study.technologies.map((tech) => (
                         <span
                           key={tech}
-                          className="rounded-lg border border-white/10 px-2 py-1 text-xs"
+                          className="rounded-lg border border-foreground/10 px-2 py-1 text-xs"
                         >
                           {tech}
                         </span>

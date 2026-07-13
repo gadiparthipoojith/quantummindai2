@@ -6,7 +6,7 @@ import { testimonials } from "@/lib/data/testimonials";
 
 export function Testimonials() {
   return (
-    <section id="testimonials" className="section-padding bg-obsidian/30">
+    <section id="testimonials" className="section-padding bg-background/30">
       <div className="container mx-auto px-4 md:px-6">
         <ScrollReveal className="mx-auto mb-16 max-w-2xl text-center">
           <span className="mb-4 inline-block text-sm font-medium uppercase tracking-widest text-cyan-pulse">

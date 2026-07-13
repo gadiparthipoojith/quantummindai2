@@ -4,7 +4,7 @@ import { studio } from "@/lib/data/team";
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-obsidian/50">
+    <footer className="border-t border-foreground/10 bg-background/50">
       <div className="container mx-auto px-4 py-16 md:px-6">
         <div className="grid gap-12 md:grid-cols-4">
           <div className="md:col-span-2">
@@ -20,7 +20,7 @@ export function Footer() {
                 href="https://github.com/quantummind-ai"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 transition-colors hover:border-violet-core/50 hover:bg-violet-core/10"
+                className="flex h-10 w-10 items-center justify-center rounded-lg border border-foreground/10 transition-colors hover:border-violet-core/50 hover:bg-violet-core/10"
                 aria-label="GitHub"
               >
                 <Github className="h-4 w-4" />
@@ -29,7 +29,7 @@ export function Footer() {
                 href="https://linkedin.com/company/quantummind-ai"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 transition-colors hover:border-violet-core/50 hover:bg-violet-core/10"
+                className="flex h-10 w-10 items-center justify-center rounded-lg border border-foreground/10 transition-colors hover:border-violet-core/50 hover:bg-violet-core/10"
                 aria-label="LinkedIn"
               >
                 <Linkedin className="h-4 w-4" />
@@ -38,14 +38,14 @@ export function Footer() {
                 href="https://twitter.com/quantummind_ai"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 transition-colors hover:border-violet-core/50 hover:bg-violet-core/10"
+                className="flex h-10 w-10 items-center justify-center rounded-lg border border-foreground/10 transition-colors hover:border-violet-core/50 hover:bg-violet-core/10"
                 aria-label="Twitter"
               >
                 <Twitter className="h-4 w-4" />
               </a>
               <a
                 href={`mailto:${studio.email}`}
-                className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 transition-colors hover:border-violet-core/50 hover:bg-violet-core/10"
+                className="flex h-10 w-10 items-center justify-center rounded-lg border border-foreground/10 transition-colors hover:border-violet-core/50 hover:bg-violet-core/10"
                 aria-label="Email"
               >
                 <Mail className="h-4 w-4" />
@@ -73,7 +73,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-sm text-muted-foreground sm:flex-row">
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-foreground/10 pt-8 text-sm text-muted-foreground sm:flex-row">
           <p>© {new Date().getFullYear()} {studio.name}. All rights reserved.</p>
           <p>{studio.tagline}</p>
         </div>

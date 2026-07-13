@@ -34,7 +34,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
-// Types
+
 type UserRole = "public" | "admin" | "client_acme" | "client_nova" | "client_apex";
 
 interface Milestone {
@@ -62,10 +62,9 @@ interface ProjectData {
   documents: SOWDoc[];
 }
 
-// Replaced CLIENT_PROJECTS with dynamic DB fetching
 
 export default function DashboardPage() {
-  // Authentication Role State
+
   const [role, setRole] = useState<UserRole | string>("public");
   const [userId, setUserId] = useState("");
   const [signedInName, setSignedInName] = useState("");
@@ -74,11 +73,11 @@ export default function DashboardPage() {
   const [loginError, setLoginError] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  // Projects State
+
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [isLoadingProjects, setIsLoadingProjects] = useState(false);
 
-  // Navigation and Sidebar Active Tab
+
   const [activeTab, setActiveTab] = useState<"overview" | "calculator" | "documents" | "devtools" | "projects" | "access">("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -91,11 +90,11 @@ export default function DashboardPage() {
     }
   }, []);
 
-  // Founder Active Client Selection
+
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [openFolders, setOpenFolders] = useState<Record<string, boolean>>({});
 
-  // Project ROI & Estimate Calculator State
+
   const [tier, setTier] = useState<"starter" | "professional" | "enterprise">("professional");
   const [services, setServices] = useState<Record<string, boolean>>({
     chatbot: false,
@@ -146,7 +145,7 @@ export default function DashboardPage() {
     fetchPricing();
   }, []);
 
-  // Admin Manage Projects State
+
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [clients, setClients] = useState<any[]>([]);
@@ -156,7 +155,7 @@ export default function DashboardPage() {
   const [newProjectTimeline, setNewProjectTimeline] = useState("");
   const [isUploading, setIsUploading] = useState(false);
 
-  // Status Update State
+
   const [projectToUpdate, setProjectToUpdate] = useState<ProjectData | null>(null);
   const [updateProgress, setUpdateProgress] = useState(0);
   const [updateRoadmap, setUpdateRoadmap] = useState<Milestone[]>([]);
@@ -295,7 +294,7 @@ export default function DashboardPage() {
   const fetchProjects = async (uid: string) => {
     setIsLoadingProjects(true);
     try {
-      const res = await fetch(`/api/projects?userId=${uid}`);
+      const res = await fetch(`/api/projects?userId=${uid}&t=${Date.now()}`, { cache: "no-store" });
       const data = await res.json();
       if (res.ok && data.success) {
         const parsed = data.projects.map((p: any) => ({
@@ -449,7 +448,7 @@ export default function DashboardPage() {
   // Helper renderer to lock a tab for general visitors
   const renderLockedOverlay = () => {
     return (
-      <div className="relative rounded-3xl overflow-hidden min-h-[400px] flex items-center justify-center border border-white/10 bg-slate-950/40 backdrop-blur-md p-8 text-center shadow-xl">
+      <div className="relative rounded-3xl overflow-hidden min-h-[400px] flex items-center justify-center border border-foreground/10 bg-slate-950/40 backdrop-blur-md p-8 text-center shadow-xl">
         <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-violet-core/20 blur-[60px] pointer-events-none" />
         <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-cyan-pulse/10 blur-[60px] pointer-events-none" />
         
@@ -487,9 +486,9 @@ export default function DashboardPage() {
         </div>
 
         {/* SIDEBAR - DESKTOP FIXED */}
-        <aside className="hidden lg:flex flex-col w-64 border-r border-white/5 bg-slate-950/40 backdrop-blur-xl z-20 flex-shrink-0">
+        <aside className="hidden lg:flex flex-col w-64 border-r border-foreground/5 bg-slate-950/40 backdrop-blur-xl z-20 flex-shrink-0">
           {/* Logo Brand Header */}
-          <div className="p-6 border-b border-white/5 flex items-center justify-between">
+          <div className="p-6 border-b border-foreground/5 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 group">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-violet-core to-cyan-pulse text-sm font-bold text-white transition-transform group-hover:scale-105">
                 QM
@@ -517,7 +516,7 @@ export default function DashboardPage() {
                   className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all border text-left cursor-pointer ${
                     isActive
                       ? "bg-violet-core/10 border-violet-core/30 text-violet-glow"
-                      : "bg-transparent border-transparent text-muted-foreground hover:text-slate-200 hover:bg-white/5"
+                      : "bg-transparent border-transparent text-muted-foreground hover:text-muted-foreground hover:bg-foreground/5"
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -582,14 +581,14 @@ export default function DashboardPage() {
           </div>
 
           {/* Sidebar User Footer / Login / Logout */}
-          <div className="p-4 border-t border-white/5">
+          <div className="p-4 border-t border-foreground/5">
             {role === "public" ? (
-              <Button onClick={() => setShowLoginModal(true)} variant="outline" className="w-full text-xs font-semibold h-10 border-white/10 hover:bg-white/5">
+              <Button onClick={() => setShowLoginModal(true)} variant="outline" className="w-full text-xs font-semibold h-10 border-foreground/10 hover:bg-foreground/5">
                 <LogIn className="h-4 w-4 mr-2" />
                 Workspace Sign In
               </Button>
             ) : (
-              <div className="flex items-center justify-between p-2 rounded-xl bg-white/5 border border-white/5">
+              <div className="flex items-center justify-between p-2 rounded-xl bg-foreground/5 border border-foreground/5">
                 <div className="flex flex-col min-w-0 pr-2">
                   <span className="text-[9px] text-muted-foreground uppercase font-bold tracking-wider">Signed In As</span>
                   <span className="text-xs font-bold text-violet-glow truncate">{signedInName}</span>
@@ -624,9 +623,9 @@ export default function DashboardPage() {
                 animate={{ x: 0 }}
                 exit={{ x: "-100%" }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="fixed left-0 top-0 bottom-0 w-64 border-r border-white/5 bg-slate-950 z-40 flex flex-col lg:hidden"
+                className="fixed left-0 top-0 bottom-0 w-64 border-r border-foreground/5 bg-slate-950 z-40 flex flex-col lg:hidden"
               >
-                <div className="p-6 border-b border-white/5 flex items-center justify-between">
+                <div className="p-6 border-b border-foreground/5 flex items-center justify-between">
                   <Link href="/" className="flex items-center gap-2">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-core to-cyan-pulse text-xs font-bold text-white">
                       QM
@@ -637,7 +636,7 @@ export default function DashboardPage() {
                   </Link>
                   <button
                     onClick={() => setSidebarOpen(false)}
-                    className="h-8 w-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-200 cursor-pointer"
+                    className="h-8 w-8 rounded-full bg-foreground/5 border border-foreground/10 flex items-center justify-center text-muted-foreground hover:text-muted-foreground cursor-pointer"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -663,7 +662,7 @@ export default function DashboardPage() {
                         className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all border text-left cursor-pointer ${
                           isActive
                             ? "bg-violet-core/10 border-violet-core/30 text-violet-glow"
-                            : "bg-transparent border-transparent text-muted-foreground hover:text-slate-200 hover:bg-white/5"
+                            : "bg-transparent border-transparent text-muted-foreground hover:text-muted-foreground hover:bg-foreground/5"
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
@@ -737,7 +736,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Mobile User Footer */}
-                <div className="p-4 border-t border-white/5">
+                <div className="p-4 border-t border-foreground/5">
                   {role === "public" ? (
                     <Button
                       onClick={() => {
@@ -745,13 +744,13 @@ export default function DashboardPage() {
                         setSidebarOpen(false);
                       }}
                       variant="outline"
-                      className="w-full text-xs font-semibold h-10 border-white/10"
+                      className="w-full text-xs font-semibold h-10 border-foreground/10"
                     >
                       <LogIn className="h-4 w-4 mr-2" />
                       Workspace Sign In
                     </Button>
                   ) : (
-                    <div className="flex items-center justify-between p-2 rounded-xl bg-white/5 border border-white/5">
+                    <div className="flex items-center justify-between p-2 rounded-xl bg-foreground/5 border border-foreground/5">
                       <div className="flex flex-col min-w-0 pr-2">
                         <span className="text-[9px] text-muted-foreground uppercase font-bold tracking-wider">Signed In As</span>
                         <span className="text-xs font-bold text-violet-glow truncate">{signedInName}</span>
@@ -773,17 +772,17 @@ export default function DashboardPage() {
         {/* MAIN PANEL CONTENT */}
         <div className="flex-1 flex flex-col h-full overflow-hidden">
           {/* TOP BAR / NAVIGATION */}
-          <header className="h-16 border-b border-white/5 flex items-center justify-between px-6 bg-slate-950/20 backdrop-blur z-10 flex-shrink-0">
+          <header className="h-16 border-b border-foreground/5 flex items-center justify-between px-6 bg-slate-950/20 backdrop-blur z-10 flex-shrink-0">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="h-9 w-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:text-slate-100 lg:hidden cursor-pointer"
+                className="h-9 w-9 rounded-lg bg-foreground/5 border border-foreground/10 flex items-center justify-center text-muted-foreground hover:text-slate-100 lg:hidden cursor-pointer"
               >
                 <Menu className="h-5 w-5" />
               </button>
               
               <div className="flex items-center gap-2">
-                <Button asChild variant="ghost" size="sm" className="hover:bg-white/5 h-8">
+                <Button asChild variant="ghost" size="sm" className="hover:bg-foreground/5 h-8">
                   <Link href="/">
                     <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
                     Back to Portfolio
@@ -836,7 +835,7 @@ export default function DashboardPage() {
                   <>
                     {/* Founder Aggregate Metrics */}
                     <div className="grid gap-4 sm:grid-cols-3">
-                      <Card className="glass border-white/10 p-5 bg-gradient-to-br from-violet-core/5 to-slate-900/50">
+                      <Card className="glass border-foreground/10 p-5 bg-gradient-to-br from-violet-core/5 to-slate-900/50">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-xl bg-violet-core/10 border border-violet-core/20 flex items-center justify-center text-violet-glow flex-shrink-0">
                             <DollarSign className="h-5 w-5" />
@@ -847,7 +846,7 @@ export default function DashboardPage() {
                           </div>
                         </div>
                       </Card>
-                      <Card className="glass border-white/10 p-5 bg-gradient-to-br from-cyan-pulse/5 to-slate-900/50">
+                      <Card className="glass border-foreground/10 p-5 bg-gradient-to-br from-cyan-pulse/5 to-slate-900/50">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-xl bg-cyan-pulse/10 border border-cyan-pulse/20 flex items-center justify-center text-cyan-pulse flex-shrink-0">
                             <Briefcase className="h-5 w-5" />
@@ -858,7 +857,7 @@ export default function DashboardPage() {
                           </div>
                         </div>
                       </Card>
-                      <Card className="glass border-white/10 p-5 bg-gradient-to-br from-violet-core/5 to-slate-900/50">
+                      <Card className="glass border-foreground/10 p-5 bg-gradient-to-br from-violet-core/5 to-slate-900/50">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-xl bg-violet-core/10 border border-violet-core/20 flex items-center justify-center text-violet-glow flex-shrink-0">
                             <TrendingUp className="h-5 w-5" />
@@ -878,7 +877,7 @@ export default function DashboardPage() {
                           <Sparkles className="h-5 w-5 text-violet-glow" />
                           Toggle Active Project Timeline
                         </h3>
-                        <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 p-1 rounded-xl">
+                        <div className="flex items-center gap-1.5 bg-foreground/5 border border-foreground/10 p-1 rounded-xl">
                           {projects.map((p) => (
                             <button
                               key={p.id}
@@ -898,7 +897,7 @@ export default function DashboardPage() {
 
                       {/* Display Selected Client Milestone tracker */}
                       {projects.length > 0 && selectedProjectId && (
-                        <Card className="glass border-white/10">
+                        <Card className="glass border-foreground/10">
                           <CardHeader>
                             <CardTitle className="text-base font-bold flex items-center justify-between">
                               <span>{projects.find(p => p.id === selectedProjectId)?.projectName} ({projects.find(p => p.id === selectedProjectId)?.clientName})</span>
@@ -917,12 +916,12 @@ export default function DashboardPage() {
                                       ? "bg-violet-core border-violet-core text-white"
                                       : step.status === "In Progress"
                                       ? "border-cyan-pulse text-cyan-pulse animate-pulse"
-                                      : "border-white/10 text-muted-foreground"
+                                      : "border-foreground/10 text-muted-foreground"
                                   }`}>
                                     {idx + 1}
                                   </div>
                                   {idx !== (projects.find(p => p.id === selectedProjectId)?.roadmap.length ?? 1) - 1 && (
-                                    <div className="h-10 w-0.5 bg-white/10" />
+                                    <div className="h-10 w-0.5 bg-foreground/10" />
                                   )}
                                 </div>
                                 <div className="flex-1 pt-0.5">
@@ -933,7 +932,7 @@ export default function DashboardPage() {
                                         ? "bg-violet-core/10 text-violet-core"
                                         : step.status === "In Progress"
                                         ? "bg-cyan-pulse/10 text-cyan-pulse"
-                                        : "bg-white/5 text-muted-foreground"
+                                        : "bg-foreground/5 text-muted-foreground"
                                     }`}>
                                       {step.status}
                                     </span>
@@ -954,7 +953,7 @@ export default function DashboardPage() {
                       <div key={clientProject.id} className="space-y-6">
                         {/* Client specific metrics row */}
                         <div className="grid gap-4 sm:grid-cols-2">
-                          <Card className="glass border-white/10 p-5 bg-gradient-to-br from-cyan-pulse/5 to-slate-900/50">
+                          <Card className="glass border-foreground/10 p-5 bg-gradient-to-br from-cyan-pulse/5 to-slate-900/50">
                             <div className="flex items-center gap-3">
                               <div className="h-10 w-10 rounded-xl bg-cyan-pulse/10 border border-cyan-pulse/20 flex items-center justify-center text-cyan-pulse flex-shrink-0">
                                 <DollarSign className="h-5 w-5" />
@@ -967,7 +966,7 @@ export default function DashboardPage() {
                               </div>
                             </div>
                           </Card>
-                          <Card className="glass border-white/10 p-5 bg-gradient-to-br from-violet-core/5 to-slate-900/50">
+                          <Card className="glass border-foreground/10 p-5 bg-gradient-to-br from-violet-core/5 to-slate-900/50">
                             <div className="flex items-center gap-3">
                               <div className="h-10 w-10 rounded-xl bg-violet-core/10 border border-violet-core/20 flex items-center justify-center text-violet-glow flex-shrink-0">
                                 <FileCheck className="h-5 w-5" />
@@ -983,7 +982,7 @@ export default function DashboardPage() {
                         </div>
 
                         {/* Specific Client Roadmap */}
-                        <Card className="glass border-white/10">
+                        <Card className="glass border-foreground/10">
                           <CardHeader>
                             <CardTitle>Milestone Progress Tracker: {clientProject.projectName}</CardTitle>
                             <CardDescription>Real-time delivery progress updates for your active items.</CardDescription>
@@ -997,12 +996,12 @@ export default function DashboardPage() {
                                       ? "bg-violet-core border-violet-core text-white"
                                       : step.status === "In Progress"
                                       ? "border-cyan-pulse text-cyan-pulse animate-pulse"
-                                      : "border-white/10 text-muted-foreground"
+                                      : "border-foreground/10 text-muted-foreground"
                                   }`}>
                                     {idx + 1}
                                   </div>
                                   {idx !== clientProject.roadmap.length - 1 && (
-                                    <div className="h-10 w-0.5 bg-white/10" />
+                                    <div className="h-10 w-0.5 bg-foreground/10" />
                                   )}
                                 </div>
                                 <div className="flex-1 pt-0.5">
@@ -1013,7 +1012,7 @@ export default function DashboardPage() {
                                         ? "bg-violet-core/10 text-violet-core"
                                         : step.status === "In Progress"
                                         ? "bg-cyan-pulse/10 text-cyan-pulse"
-                                        : "bg-white/5 text-muted-foreground"
+                                        : "bg-foreground/5 text-muted-foreground"
                                     }`}>
                                       {step.status}
                                     </span>
@@ -1027,7 +1026,7 @@ export default function DashboardPage() {
                       </div>
                     ))}
                     {projects.length === 0 && !isLoadingProjects && (
-                      <div className="text-center p-10 glass border-white/10 rounded-2xl">
+                      <div className="text-center p-10 glass border-foreground/10 rounded-2xl">
                         <p className="text-muted-foreground">No active projects found.</p>
                       </div>
                     )}
@@ -1037,7 +1036,7 @@ export default function DashboardPage() {
             )}
 
             {activeTab === "calculator" && (
-              <Card className="glass border-white/10">
+              <Card className="glass border-foreground/10">
                 <CardHeader>
                   <div className="flex items-start justify-between gap-4">
                     <div>
@@ -1063,7 +1062,7 @@ export default function DashboardPage() {
                   <div className="space-y-6">
                     {/* TIER SELECTION */}
                     <div>
-                      <label className="text-sm font-semibold mb-2 block text-slate-200">1. Project Development Tier</label>
+                      <label className="text-sm font-semibold mb-2 block text-muted-foreground">1. Project Development Tier</label>
                       <div className="grid grid-cols-3 gap-2">
                         {tierPrices.map((c) => (
                           <button
@@ -1073,7 +1072,7 @@ export default function DashboardPage() {
                             className={`rounded-xl border p-3 text-left transition-all cursor-pointer ${
                               tier === c.id
                                 ? "border-violet-core bg-violet-core/10 text-violet-glow"
-                                : "border-white/10 hover:border-white/20 bg-white/5 text-muted-foreground hover:text-foreground"
+                                : "border-foreground/10 hover:border-foreground/20 bg-foreground/5 text-muted-foreground hover:text-foreground"
                             }`}
                           >
                             <span className="text-xs font-bold block">{c.label}</span>
@@ -1085,7 +1084,7 @@ export default function DashboardPage() {
 
                     {/* SERVICES SELECTION */}
                     <div className="space-y-3">
-                      <label className="text-sm font-semibold block text-slate-200">2. Select Targeted Services & Modules</label>
+                      <label className="text-sm font-semibold block text-muted-foreground">2. Select Targeted Services & Modules</label>
                       <div className="grid gap-2.5 sm:grid-cols-2">
                         {servicePrices.map((item) => {
                           const isSelected = !!services[item.id];
@@ -1095,7 +1094,7 @@ export default function DashboardPage() {
                               className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition ${
                                 isSelected 
                                   ? "border-violet-core bg-violet-core/5" 
-                                  : "border-white/5 bg-white/5 hover:bg-white/10"
+                                  : "border-foreground/5 bg-foreground/5 hover:bg-foreground/10"
                               }`}
                             >
                               <input
@@ -1119,7 +1118,7 @@ export default function DashboardPage() {
 
                     {/* SUPPORT PLAN SELECTION */}
                     <div>
-                      <label className="text-sm font-semibold mb-2 block text-slate-200">3. Support Retainer Plan (Monthly Add-on)</label>
+                      <label className="text-sm font-semibold mb-2 block text-muted-foreground">3. Support Retainer Plan (Monthly Add-on)</label>
                       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                         {supportPrices.map((s) => (
                           <button
@@ -1129,7 +1128,7 @@ export default function DashboardPage() {
                             className={`rounded-xl border p-2 text-center transition cursor-pointer ${
                               support === s.id
                                 ? "border-violet-core bg-violet-core/10 text-violet-glow"
-                                : "border-white/10 hover:border-white/20 bg-white/5 text-muted-foreground hover:text-foreground"
+                                : "border-foreground/10 hover:border-foreground/20 bg-foreground/5 text-muted-foreground hover:text-foreground"
                             }`}
                           >
                             <span className="text-xxs font-bold block">{s.label}</span>
@@ -1141,11 +1140,11 @@ export default function DashboardPage() {
                   </div>
 
                   {/* CALCULATOR OUTCOME */}
-                  <div className="glass rounded-3xl p-6 border-white/10 bg-violet-core/5 flex flex-col justify-between relative overflow-hidden">
+                  <div className="glass rounded-3xl p-6 border-foreground/10 bg-violet-core/5 flex flex-col justify-between relative overflow-hidden">
                     <div className="absolute top-0 right-0 h-24 w-24 bg-violet-core/5 blur-2xl pointer-events-none" />
                     
                     <div className="space-y-6">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-violet-glow border-b border-white/5 pb-2">Estimated Investment</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-violet-glow border-b border-foreground/5 pb-2">Estimated Investment</h4>
                       <div className="space-y-4">
                         <div>
                           <span className="text-xs text-muted-foreground block">Development Timeline</span>
@@ -1176,7 +1175,7 @@ export default function DashboardPage() {
                 {role === "public" ? (
                   renderLockedOverlay()
                 ) : (
-                  <Card className="glass border-white/10">
+                  <Card className="glass border-foreground/10">
                     <CardHeader>
                       <CardTitle>Agreements & Onboarding Assets</CardTitle>
                       <CardDescription>
@@ -1195,12 +1194,12 @@ export default function DashboardPage() {
                             const fileCount = project.documents.length;
                             
                             return (
-                              <div key={key} className="glass rounded-2xl border-white/5 bg-slate-950/20 overflow-hidden transition-all duration-300">
+                              <div key={key} className="glass rounded-2xl border-foreground/5 bg-slate-950/20 overflow-hidden transition-all duration-300">
                                 {/* Folder Header button */}
                                 <button
                                   onClick={() => setOpenFolders(prev => ({ ...prev, [key]: !prev[key] }))}
                                   type="button"
-                                  className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 transition-colors border-b border-white/5 text-left cursor-pointer"
+                                  className="w-full flex items-center justify-between p-4 bg-foreground/5 hover:bg-foreground/10 transition-colors border-b border-foreground/5 text-left cursor-pointer"
                                 >
                                   <div className="flex items-center gap-3">
                                     <div className="h-10 w-10 rounded-xl bg-violet-core/10 border border-violet-core/20 flex items-center justify-center text-violet-glow">
@@ -1220,10 +1219,10 @@ export default function DashboardPage() {
                                     </div>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <span className="text-xxs font-medium bg-white/5 border border-white/10 px-2 py-0.5 rounded text-muted-foreground">
+                                    <span className="text-xxs font-medium bg-foreground/5 border border-foreground/10 px-2 py-0.5 rounded text-muted-foreground">
                                       {fileCount} {fileCount === 1 ? "file" : "files"}
                                     </span>
-                                    <ChevronRight className={`h-4 w-4 text-slate-400 transition-transform duration-300 ${isOpen ? "rotate-90" : ""}`} />
+                                    <ChevronRight className={`h-4 w-4 text-muted-foreground transition-transform duration-300 ${isOpen ? "rotate-90" : ""}`} />
                                   </div>
                                 </button>
 
@@ -1236,17 +1235,17 @@ export default function DashboardPage() {
                                       exit={{ height: 0, opacity: 0 }}
                                       className="overflow-hidden"
                                     >
-                                      <div className="p-4 space-y-3 bg-slate-950/40 border-t border-white/5 pl-8 relative">
+                                      <div className="p-4 space-y-3 bg-slate-950/40 border-t border-foreground/5 pl-8 relative">
                                         {/* Vertical guide line */}
-                                        <div className="absolute left-6 top-4 bottom-4 w-px bg-white/10" />
+                                        <div className="absolute left-6 top-4 bottom-4 w-px bg-foreground/10" />
                                         
                                         {project.documents.map((doc, idx) => (
-                                          <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-white/5 bg-white/5 hover:bg-white/10 transition-colors relative">
+                                          <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-foreground/5 bg-foreground/5 hover:bg-foreground/10 transition-colors relative">
                                             {/* Connecting node dot */}
                                             <div className="absolute -left-[14px] top-1/2 -translate-y-1/2 h-2 w-2 rounded-full bg-violet-core border-2 border-slate-950" />
                                             
                                             <div>
-                                              <h4 className="font-bold text-sm flex items-center gap-1.5 text-slate-200">
+                                              <h4 className="font-bold text-sm flex items-center gap-1.5 text-muted-foreground">
                                                 <FileText className="h-4 w-4 text-violet-glow" />
                                                 {doc.name}
                                               </h4>
@@ -1273,14 +1272,14 @@ export default function DashboardPage() {
                         <div className="space-y-6">
                           {projects.map((clientProject) => (
                             <div key={clientProject.id} className="space-y-3">
-                              <div className="flex items-center gap-2 border-b border-white/5 pb-2">
+                              <div className="flex items-center gap-2 border-b border-foreground/5 pb-2">
                                 <span className="text-xs font-bold text-cyan-pulse uppercase tracking-wider">
                                   {clientProject.projectName}
                                 </span>
                               </div>
                               
                               {clientProject.documents.map((doc, idx) => (
-                                <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-white/5 bg-white/5 hover:bg-white/10 transition-colors">
+                                <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-foreground/5 bg-foreground/5 hover:bg-foreground/10 transition-colors">
                                   <div>
                                     <h4 className="font-bold text-sm">{doc.name}</h4>
                                     <p className="text-xs text-muted-foreground mt-1 max-w-lg">{doc.desc}</p>
@@ -1312,17 +1311,17 @@ export default function DashboardPage() {
                       <CardDescription>Server and database health monitoring.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                      <div className="flex items-center justify-between p-3 rounded-lg bg-black/20 border border-white/5">
-                        <span className="text-sm text-slate-300">Database Connection</span>
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-black/20 border border-foreground/5">
+                        <span className="text-sm text-muted-foreground">Database Connection</span>
                         <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-full">Connected</span>
                       </div>
-                      <div className="flex items-center justify-between p-3 rounded-lg bg-black/20 border border-white/5">
-                        <span className="text-sm text-slate-300">API Latency</span>
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-black/20 border border-foreground/5">
+                        <span className="text-sm text-muted-foreground">API Latency</span>
                         <span className="text-xs font-bold text-emerald-400">42ms</span>
                       </div>
-                      <div className="flex items-center justify-between p-3 rounded-lg bg-black/20 border border-white/5">
-                        <span className="text-sm text-slate-300">Server Time</span>
-                        <span className="text-xs font-bold text-slate-400">{new Date().toISOString().split('T')[1].slice(0, 8)}</span>
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-black/20 border border-foreground/5">
+                        <span className="text-sm text-muted-foreground">Server Time</span>
+                        <span className="text-xs font-bold text-muted-foreground">{new Date().toISOString().split('T')[1].slice(0, 8)}</span>
                       </div>
                     </CardContent>
                   </Card>
@@ -1333,17 +1332,17 @@ export default function DashboardPage() {
                       <CardDescription>Administrative data management tools.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      <Button variant="outline" className="w-full justify-start border-white/10 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-colors h-11" onClick={() => alert("Cache cleared successfully!")}>
+                      <Button variant="outline" className="w-full justify-start border-foreground/10 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-colors h-11" onClick={() => alert("Cache cleared successfully!")}>
                         <TrendingUp className="mr-2 h-4 w-4 text-emerald-400" />
                         Clear Application Cache
                       </Button>
-                      <Button variant="outline" className="w-full justify-start border-white/10 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-colors h-11">
+                      <Button variant="outline" className="w-full justify-start border-foreground/10 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-colors h-11">
                         <a href="http://localhost:5555" target="_blank" rel="noreferrer" className="flex items-center w-full">
                           <Database className="mr-2 h-4 w-4 text-emerald-400" />
                           Open Prisma Studio Portal
                         </a>
                       </Button>
-                      <Button variant="outline" className="w-full justify-start border-white/10 hover:border-rose-500/50 hover:bg-rose-500/10 hover:text-rose-400 transition-colors h-11 text-muted-foreground" onClick={() => alert("Cannot re-seed in production mode.")}>
+                      <Button variant="outline" className="w-full justify-start border-foreground/10 hover:border-rose-500/50 hover:bg-rose-500/10 hover:text-rose-400 transition-colors h-11 text-muted-foreground" onClick={() => alert("Cannot re-seed in production mode.")}>
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Re-Seed Database (Danger)
                       </Button>
@@ -1397,12 +1396,12 @@ export default function DashboardPage() {
                     <CardDescription>Direct, read-only view of database records.</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="bg-black/50 border border-white/5 rounded-xl overflow-x-auto">
+                    <div className="bg-black/50 border border-foreground/5 rounded-xl overflow-x-auto">
                       {!dbData ? (
-                        <div className="p-8 text-center text-slate-400 text-sm">Loading database records...</div>
+                        <div className="p-8 text-center text-muted-foreground text-sm">Loading database records...</div>
                       ) : (
-                        <table className="w-full text-xs text-left text-slate-300">
-                          <thead className="bg-white/5 text-slate-400 border-b border-white/10 uppercase font-bold tracking-wider">
+                        <table className="w-full text-xs text-left text-muted-foreground">
+                          <thead className="bg-foreground/5 text-muted-foreground border-b border-foreground/10 uppercase font-bold tracking-wider">
                             {activeDbTable === "users" && (
                               <tr>
                                 <th className="px-4 py-3">ID</th>
@@ -1436,7 +1435,7 @@ export default function DashboardPage() {
                           </thead>
                           <tbody className="divide-y divide-white/5">
                             {activeDbTable === "users" && dbData.users.map(u => (
-                              <tr key={u.id} className="hover:bg-white/5">
+                              <tr key={u.id} className="hover:bg-foreground/5">
                                 <td className="px-4 py-3 font-mono">{u.id}</td>
                                 <td className="px-4 py-3">{u.name} {u.clientAlias && `(${u.clientAlias})`}</td>
                                 <td className="px-4 py-3">{u.role}</td>
@@ -1444,7 +1443,7 @@ export default function DashboardPage() {
                               </tr>
                             ))}
                             {activeDbTable === "projects" && dbData.projects.map(p => (
-                              <tr key={p.id} className="hover:bg-white/5">
+                              <tr key={p.id} className="hover:bg-foreground/5">
                                 <td className="px-4 py-3 font-mono">{p.id}</td>
                                 <td className="px-4 py-3">{p.clientName}</td>
                                 <td className="px-4 py-3">{p.projectName}</td>
@@ -1452,7 +1451,7 @@ export default function DashboardPage() {
                               </tr>
                             ))}
                             {activeDbTable === "contactMessages" && dbData.contactMessages.map(c => (
-                              <tr key={c.id} className="hover:bg-white/5">
+                              <tr key={c.id} className="hover:bg-foreground/5">
                                 <td className="px-4 py-3">{c.name}</td>
                                 <td className="px-4 py-3 text-emerald-400">{c.email}</td>
                                 <td className="px-4 py-3">{c.company || "-"}</td>
@@ -1460,14 +1459,14 @@ export default function DashboardPage() {
                               </tr>
                             ))}
                             {activeDbTable === "loginLogs" && dbData.loginLogs.map(l => (
-                              <tr key={l.id} className="hover:bg-white/5">
+                              <tr key={l.id} className="hover:bg-foreground/5">
                                 <td className="px-4 py-3 font-mono">{new Date(l.loginAt).toLocaleString()}</td>
                                 <td className="px-4 py-3 text-emerald-400 font-bold">{l.userName || "Unknown"}</td>
                               </tr>
                             ))}
                             {dbData[activeDbTable].length === 0 && (
                               <tr>
-                                <td colSpan={4} className="px-4 py-8 text-center text-slate-500">No records found.</td>
+                                <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">No records found.</td>
                               </tr>
                             )}
                           </tbody>
@@ -1485,11 +1484,11 @@ export default function DashboardPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="bg-black/50 border border-white/5 rounded-xl p-4 font-mono text-xs space-y-2 max-h-64 overflow-y-auto">
-                      <div className="text-slate-400">[INFO] Database connection initialized...</div>
-                      <div className="text-slate-400">[INFO] Prisma Client v5.22.0 loaded.</div>
+                    <div className="bg-black/50 border border-foreground/5 rounded-xl p-4 font-mono text-xs space-y-2 max-h-64 overflow-y-auto">
+                      <div className="text-muted-foreground">[INFO] Database connection initialized...</div>
+                      <div className="text-muted-foreground">[INFO] Prisma Client v5.22.0 loaded.</div>
                       <div className="text-emerald-400">[SUCCESS] Admin poojith authenticated from 127.0.0.1.</div>
-                      <div className="text-slate-400">[INFO] Fetching active projects for user poojith...</div>
+                      <div className="text-muted-foreground">[INFO] Fetching active projects for user poojith...</div>
                       <div className="text-emerald-400">[SUCCESS] Projects loaded successfully.</div>
                     </div>
                   </CardContent>
@@ -1508,7 +1507,7 @@ export default function DashboardPage() {
                     </h3>
                   </div>
                   <Button 
-                    className="bg-violet-core hover:bg-violet-600 text-white font-bold tracking-wide transition-colors"
+                    className="bg-violet-core hover:bg-violet-600 text-foreground font-bold tracking-wide transition-colors"
                     onClick={() => setShowUploadModal(true)}
                   >
                     <Plus className="h-4 w-4 mr-2" />
@@ -1518,12 +1517,12 @@ export default function DashboardPage() {
 
                 <div className="grid gap-4">
                   {projects.length === 0 ? (
-                    <div className="p-8 text-center border border-white/5 rounded-xl bg-slate-900/50 text-slate-400">
+                    <div className="p-8 text-center border border-foreground/5 rounded-xl bg-slate-900/50 text-muted-foreground">
                       No active projects found. Upload a new project to get started.
                     </div>
                   ) : (
                     projects.map(p => (
-                      <Card key={p.id} className="glass border-white/10 bg-slate-900/30 hover:bg-slate-900/50 transition-colors">
+                      <Card key={p.id} className="glass border-foreground/10 bg-slate-900/30 hover:bg-slate-900/50 transition-colors">
                         <CardHeader className="pb-3">
                           <CardTitle className="text-base font-bold flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
@@ -1546,7 +1545,7 @@ export default function DashboardPage() {
                         </CardHeader>
                         <CardContent>
                           <div className="flex items-center gap-3">
-                            <div className="flex-1 bg-white/5 h-2 rounded-full overflow-hidden border border-white/10">
+                            <div className="flex-1 bg-foreground/5 h-2 rounded-full overflow-hidden border border-foreground/10">
                               <div className="h-full bg-violet-core rounded-full" style={{ width: `${p.progress || 0}%` }} />
                             </div>
                             <span className="text-xs font-bold text-violet-glow w-8">{p.progress || 0}%</span>
@@ -1564,8 +1563,8 @@ export default function DashboardPage() {
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Access Management</h2>
-                    <p className="text-slate-400 mt-1">Manage user passcodes and access roles.</p>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">Access Management</h2>
+                    <p className="text-muted-foreground mt-1">Manage user passcodes and access roles.</p>
                   </div>
                   <Button onClick={() => setShowCreateUserModal(true)} className="bg-emerald-500 hover:bg-emerald-600 text-white border-0 shadow-[0_0_15px_rgba(16,185,129,0.5)]">
                     <Plus className="mr-2 h-4 w-4" /> Create Access
@@ -1575,8 +1574,8 @@ export default function DashboardPage() {
                 <Card className="bg-[#0f172a] border-slate-800 shadow-2xl">
                   <CardContent className="p-0">
                     <div className="overflow-x-auto">
-                      <table className="w-full text-sm text-left text-slate-300">
-                        <thead className="text-xs uppercase bg-[#1e293b] text-slate-400">
+                      <table className="w-full text-sm text-left text-muted-foreground">
+                        <thead className="text-xs uppercase bg-[#1e293b] text-muted-foreground">
                           <tr>
                             <th className="px-4 py-3">User Name</th>
                             <th className="px-4 py-3">Role</th>
@@ -1587,26 +1586,26 @@ export default function DashboardPage() {
                         </thead>
                         <tbody className="divide-y divide-slate-800/50">
                           {!dbData ? (
-                            <tr><td colSpan={5} className="px-4 py-8 text-center text-slate-500">Loading...</td></tr>
+                            <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">Loading...</td></tr>
                           ) : dbData.users.length === 0 ? (
                             <tr>
-                              <td colSpan={5} className="px-4 py-8 text-center text-slate-500">
+                              <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
                                 No users found.
                               </td>
                             </tr>
                           ) : (
                             dbData.users.map((user: any) => (
-                              <tr key={user.id} className="hover:bg-white/5 transition-colors">
-                                <td className="px-4 py-3 font-medium text-white">{user.name}</td>
+                              <tr key={user.id} className="hover:bg-foreground/5 transition-colors">
+                                <td className="px-4 py-3 font-medium text-foreground">{user.name}</td>
                                 <td className="px-4 py-3">
-                                  <span className="px-2 py-1 rounded-full text-[10px] font-medium bg-slate-800 text-slate-300">
+                                  <span className="px-2 py-1 rounded-full text-[10px] font-medium bg-slate-800 text-muted-foreground">
                                     {user.role}
                                   </span>
                                 </td>
                                 <td className="px-4 py-3 font-mono text-emerald-400">
                                   {user.passcode}
                                 </td>
-                                <td className="px-4 py-3 text-slate-500">{new Date(user.createdAt).toLocaleString()}</td>
+                                <td className="px-4 py-3 text-muted-foreground">{new Date(user.createdAt).toLocaleString()}</td>
                                 <td className="px-4 py-3 text-right">
                                   {user.role !== "admin" && (
                                     <Button variant="ghost" size="sm" onClick={() => handleDeleteUser(user.id)} className="text-red-400 hover:text-red-300 hover:bg-red-400/10 h-8 px-2">
@@ -1639,7 +1638,7 @@ export default function DashboardPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="glass max-w-sm w-full rounded-3xl p-6 border-white/10 bg-slate-900/90 shadow-2xl relative"
+              className="glass max-w-sm w-full rounded-3xl p-6 border-foreground/10 bg-slate-900/90 shadow-2xl relative"
             >
               {/* Close Button */}
               <button 
@@ -1647,7 +1646,7 @@ export default function DashboardPage() {
                   setShowLoginModal(false);
                   setLoginError("");
                 }}
-                className="absolute top-4 right-4 h-8 w-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 transition text-slate-400 hover:text-slate-100 cursor-pointer"
+                className="absolute top-4 right-4 h-8 w-8 rounded-full bg-foreground/5 hover:bg-foreground/10 flex items-center justify-center border border-foreground/10 transition text-muted-foreground hover:text-slate-100 cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -1706,11 +1705,11 @@ export default function DashboardPage() {
               initial={{ scale: 0.95, opacity: 0, y: 10 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 10 }}
-              className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-slate-950 p-6 shadow-2xl glass"
+              className="relative w-full max-w-md overflow-hidden rounded-2xl border border-foreground/10 bg-slate-950 p-6 shadow-2xl glass"
             >
               <button
                 onClick={() => setShowUploadModal(false)}
-                className="absolute right-4 top-4 rounded-full p-1 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground hover:bg-foreground/5 hover:text-muted-foreground"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1720,17 +1719,17 @@ export default function DashboardPage() {
                   <Briefcase className="h-6 w-6" />
                 </div>
                 <h2 className="text-xl font-bold text-slate-100">Upload New Project</h2>
-                <p className="mt-1 text-sm text-slate-400">Initialize a new project workflow for a client.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Initialize a new project workflow for a client.</p>
               </div>
 
               <form onSubmit={handleUploadProject} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-300">Client</label>
+                  <label className="text-xs font-semibold text-muted-foreground">Client</label>
                   <select
                     required
                     value={selectedClientForUpload}
                     onChange={(e) => setSelectedClientForUpload(e.target.value)}
-                    className="w-full h-10 rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white focus:border-violet-core focus:outline-none focus:ring-1 focus:ring-violet-core transition-colors"
+                    className="w-full h-10 rounded-lg border border-foreground/10 bg-black/20 px-3 text-sm text-foreground focus:border-violet-core focus:outline-none focus:ring-1 focus:ring-violet-core transition-colors"
                   >
                     <option value="" disabled>Select a client...</option>
                     {clients.map(c => (
@@ -1740,36 +1739,36 @@ export default function DashboardPage() {
                 </div>
                 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-300">Project Name</label>
+                  <label className="text-xs font-semibold text-muted-foreground">Project Name</label>
                   <Input
                     required
                     type="text"
                     value={newProjectName}
                     onChange={(e) => setNewProjectName(e.target.value)}
                     placeholder="e.g. AI Customer Agent"
-                    className="h-10 border-white/10 bg-black/20 focus-visible:ring-violet-core text-white"
+                    className="h-10 border-foreground/10 bg-black/20 focus-visible:ring-violet-core text-foreground"
                   />
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-300">Budget (₹)</label>
+                    <label className="text-xs font-semibold text-muted-foreground">Budget (₹)</label>
                     <Input
                       type="text"
                       value={newProjectBudget}
                       onChange={(e) => setNewProjectBudget(e.target.value)}
                       placeholder="e.g. ₹5,00,000"
-                      className="h-10 border-white/10 bg-black/20 focus-visible:ring-violet-core text-white"
+                      className="h-10 border-foreground/10 bg-black/20 focus-visible:ring-violet-core text-foreground"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-300">Timeline</label>
+                    <label className="text-xs font-semibold text-muted-foreground">Timeline</label>
                     <Input
                       type="text"
                       value={newProjectTimeline}
                       onChange={(e) => setNewProjectTimeline(e.target.value)}
                       placeholder="e.g. 6-8 weeks"
-                      className="h-10 border-white/10 bg-black/20 focus-visible:ring-violet-core text-white"
+                      className="h-10 border-foreground/10 bg-black/20 focus-visible:ring-violet-core text-foreground"
                     />
                   </div>
                 </div>
@@ -1778,7 +1777,7 @@ export default function DashboardPage() {
                   <Button
                     type="submit"
                     disabled={isUploading || !selectedClientForUpload || !newProjectName}
-                    className="w-full bg-violet-core hover:bg-violet-600 text-white font-bold tracking-wide"
+                    className="w-full bg-violet-core hover:bg-violet-600 text-foreground font-bold tracking-wide"
                   >
                     {isUploading ? "Initializing Project..." : "Upload Project"}
                   </Button>
@@ -1804,23 +1803,23 @@ export default function DashboardPage() {
               initial={{ scale: 0.95, opacity: 0, y: 10 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 10 }}
-              className="relative w-full max-w-sm overflow-hidden rounded-2xl border border-white/10 bg-slate-950 p-6 shadow-2xl glass"
+              className="relative w-full max-w-sm overflow-hidden rounded-2xl border border-foreground/10 bg-slate-950 p-6 shadow-2xl glass"
             >
               <button
                 onClick={() => setShowStatusModal(false)}
-                className="absolute right-4 top-4 rounded-full p-1 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground hover:bg-foreground/5 hover:text-muted-foreground"
               >
                 <X className="h-5 w-5" />
               </button>
               
               <div className="mb-6">
                 <h2 className="text-lg font-bold text-slate-100 mb-1">Update Project Status</h2>
-                <p className="text-xs text-slate-400">{projectToUpdate.projectName} - {projectToUpdate.clientName}</p>
+                <p className="text-xs text-muted-foreground">{projectToUpdate.projectName} - {projectToUpdate.clientName}</p>
               </div>
 
               <form onSubmit={handleUpdateStatus} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-300 flex justify-between">
+                  <label className="text-xs font-semibold text-muted-foreground flex justify-between">
                     <span>Overall Progress</span>
                     <span className="text-violet-glow">{updateProgress}%</span>
                   </label>
@@ -1836,20 +1835,26 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="space-y-2 mt-4 max-h-48 overflow-y-auto pr-2">
-                  <label className="text-xs font-semibold text-slate-300">Milestone Tracker</label>
+                  <label className="text-xs font-semibold text-muted-foreground">Milestone Tracker</label>
                   {updateRoadmap.map((step, idx) => (
-                    <div key={idx} className="flex items-center justify-between bg-black/20 p-2.5 rounded-lg border border-white/5">
+                    <div key={idx} className="flex items-center justify-between bg-black/20 p-2.5 rounded-lg border border-foreground/5">
                       <div className="flex flex-col">
-                        <span className="text-xs font-semibold text-slate-200">{step.title}</span>
+                        <span className="text-xs font-semibold text-muted-foreground">{step.title}</span>
                       </div>
                       <select 
                         value={step.status} 
                         onChange={(e) => {
                           const newRoadmap = [...updateRoadmap];
-                          newRoadmap[idx].status = e.target.value as any;
+                          newRoadmap[idx] = { ...newRoadmap[idx], status: e.target.value };
                           setUpdateRoadmap(newRoadmap);
+                          
+                          const completed = newRoadmap.filter(s => s.status === "Completed").length;
+                          const total = newRoadmap.length;
+                          if (total > 0) {
+                            setUpdateProgress(Math.round((completed / total) * 100));
+                          }
                         }}
-                        className="text-[10px] bg-slate-900 border border-white/10 rounded px-2 py-1 text-slate-300 outline-none"
+                        className="text-[10px] bg-slate-900 border border-foreground/10 rounded px-2 py-1 text-muted-foreground outline-none"
                       >
                         <option value="Scheduled">Scheduled</option>
                         <option value="In Progress">In Progress</option>
@@ -1863,7 +1868,7 @@ export default function DashboardPage() {
                   <Button
                     type="submit"
                     disabled={isUpdatingStatus}
-                    className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold tracking-wide border-none"
+                    className="w-full bg-emerald-600 hover:bg-emerald-500 text-foreground font-bold tracking-wide border-none"
                   >
                     {isUpdatingStatus ? "Saving..." : "Save Status"}
                   </Button>
@@ -1889,11 +1894,11 @@ export default function DashboardPage() {
               initial={{ scale: 0.95, opacity: 0, y: 10 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 10 }}
-              className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-slate-950 p-6 shadow-2xl glass"
+              className="relative w-full max-w-md overflow-hidden rounded-2xl border border-foreground/10 bg-slate-950 p-6 shadow-2xl glass"
             >
               <button
                 onClick={() => setShowCreateUserModal(false)}
-                className="absolute right-4 top-4 rounded-full p-1 text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground hover:bg-foreground/5 hover:text-muted-foreground"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1902,41 +1907,41 @@ export default function DashboardPage() {
                 <h3 className="text-xl font-bold text-slate-100 flex items-center gap-2">
                   <Key className="h-5 w-5 text-emerald-400" /> Create Access
                 </h3>
-                <p className="text-sm text-slate-400 mt-1">Generate a new login passcode for a user.</p>
+                <p className="text-sm text-muted-foreground mt-1">Generate a new login passcode for a user.</p>
               </div>
 
               <form onSubmit={handleCreateUser} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-300">Full Name</label>
+                  <label className="text-xs font-semibold text-muted-foreground">Full Name</label>
                   <Input 
                     required
                     value={newUserName}
                     onChange={(e) => setNewUserName(e.target.value)}
                     placeholder="e.g. John Doe"
-                    className="h-10 border-white/10 bg-black/20 focus-visible:ring-emerald-500 text-white"
+                    className="h-10 border-foreground/10 bg-black/20 focus-visible:ring-emerald-500 text-foreground"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-300">Role</label>
+                  <label className="text-xs font-semibold text-muted-foreground">Role</label>
                   <select
                     required
                     value={newUserRole}
                     onChange={(e) => setNewUserRole(e.target.value)}
-                    className="w-full h-10 rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
+                    className="w-full h-10 rounded-lg border border-foreground/10 bg-black/20 px-3 text-sm text-foreground focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
                   >
                     <option value="client">Client</option>
                     <option value="admin">Admin</option>
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-300">Passcode</label>
+                  <label className="text-xs font-semibold text-muted-foreground">Passcode</label>
                   <div className="flex gap-2">
                     <Input 
                       required
                       value={newUserPasscode}
                       onChange={(e) => setNewUserPasscode(e.target.value)}
                       placeholder="Secret passcode"
-                      className="h-10 border-white/10 bg-black/20 focus-visible:ring-emerald-500 text-white font-mono"
+                      className="h-10 border-foreground/10 bg-black/20 focus-visible:ring-emerald-500 text-foreground font-mono"
                     />
                     <Button type="button" onClick={generatePasscode} variant="outline" className="border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 h-10">
                       Auto-Gen
@@ -1944,7 +1949,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="pt-2">
-                  <Button type="submit" disabled={isCreatingUser} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold tracking-wide border-none">
+                  <Button type="submit" disabled={isCreatingUser} className="w-full bg-emerald-600 hover:bg-emerald-500 text-foreground font-bold tracking-wide border-none">
                     {isCreatingUser ? "Creating..." : "Create User Access"}
                   </Button>
                 </div>
@@ -1961,40 +1966,40 @@ export default function DashboardPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-slate-900 border border-white/10 p-6 rounded-2xl w-full max-w-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto"
+              className="bg-slate-900 border border-foreground/10 p-6 rounded-2xl w-full max-w-2xl shadow-2xl relative max-h-[90vh] overflow-y-auto"
             >
               <button 
                 onClick={() => setShowEditPricesModal(false)}
-                className="absolute right-4 top-4 text-slate-400 hover:text-white"
+                className="absolute right-4 top-4 text-muted-foreground hover:text-foreground"
               >
                 <X className="h-5 w-5" />
               </button>
               
               <div className="mb-6">
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
                   <Settings className="h-5 w-5 text-violet-glow" />
                   Edit Estimator Pricing
                 </h3>
-                <p className="text-sm text-slate-400 mt-1">Update the prices of tiers, services, and support plans.</p>
+                <p className="text-sm text-muted-foreground mt-1">Update the prices of tiers, services, and support plans.</p>
               </div>
 
               <div className="space-y-6">
                 {/* Tiers */}
                 <div className="space-y-2">
-                  <h4 className="text-sm font-bold text-slate-300 border-b border-white/10 pb-1">Base Tiers</h4>
+                  <h4 className="text-sm font-bold text-muted-foreground border-b border-foreground/10 pb-1">Base Tiers</h4>
                   {tierPrices.map((tp, idx) => (
-                    <div key={tp.id} className="grid grid-cols-12 gap-3 items-end p-2 rounded-lg border border-white/5 bg-black/20">
+                    <div key={tp.id} className="grid grid-cols-12 gap-3 items-end p-2 rounded-lg border border-foreground/5 bg-black/20">
                       <div className="col-span-12 sm:col-span-5 space-y-1">
-                        <label className="text-[10px] uppercase font-bold text-slate-500">Label</label>
-                        <Input value={tp.label} onChange={(e) => { const newP = [...tierPrices]; newP[idx].label = e.target.value; setTierPrices(newP); }} className="h-8 text-xs border-white/10 bg-black/40 text-white" />
+                        <label className="text-[10px] uppercase font-bold text-muted-foreground">Label</label>
+                        <Input value={tp.label} onChange={(e) => { const newP = [...tierPrices]; newP[idx].label = e.target.value; setTierPrices(newP); }} className="h-8 text-xs border-foreground/10 bg-foreground/5 text-foreground" />
                       </div>
                       <div className="col-span-6 sm:col-span-4 space-y-1">
-                        <label className="text-[10px] uppercase font-bold text-slate-500">Display Price</label>
-                        <Input value={tp.price} onChange={(e) => { const newP = [...tierPrices]; newP[idx].price = e.target.value; setTierPrices(newP); }} className="h-8 text-xs border-white/10 bg-black/40 text-white" />
+                        <label className="text-[10px] uppercase font-bold text-muted-foreground">Display Price</label>
+                        <Input value={tp.price} onChange={(e) => { const newP = [...tierPrices]; newP[idx].price = e.target.value; setTierPrices(newP); }} className="h-8 text-xs border-foreground/10 bg-foreground/5 text-foreground" />
                       </div>
                       <div className="col-span-6 sm:col-span-3 space-y-1">
-                        <label className="text-[10px] uppercase font-bold text-slate-500">Numeric Value</label>
-                        <Input type="number" value={tp.value} onChange={(e) => { const newP = [...tierPrices]; newP[idx].value = parseInt(e.target.value) || 0; setTierPrices(newP); }} className="h-8 text-xs border-white/10 bg-black/40 text-white" />
+                        <label className="text-[10px] uppercase font-bold text-muted-foreground">Numeric Value</label>
+                        <Input type="number" value={tp.value} onChange={(e) => { const newP = [...tierPrices]; newP[idx].value = parseInt(e.target.value) || 0; setTierPrices(newP); }} className="h-8 text-xs border-foreground/10 bg-foreground/5 text-foreground" />
                       </div>
                     </div>
                   ))}
@@ -2002,17 +2007,17 @@ export default function DashboardPage() {
 
                 {/* Services */}
                 <div className="space-y-2">
-                  <h4 className="text-sm font-bold text-slate-300 border-b border-white/10 pb-1">Services & Modules</h4>
+                  <h4 className="text-sm font-bold text-muted-foreground border-b border-foreground/10 pb-1">Services & Modules</h4>
                   {servicePrices.map((sp, idx) => (
-                    <div key={sp.id} className="grid grid-cols-12 gap-3 items-end p-2 rounded-lg border border-white/5 bg-black/20">
+                    <div key={sp.id} className="grid grid-cols-12 gap-3 items-end p-2 rounded-lg border border-foreground/5 bg-black/20">
                       <div className="col-span-12 sm:col-span-5 space-y-1">
-                        <Input value={sp.label} onChange={(e) => { const newP = [...servicePrices]; newP[idx].label = e.target.value; setServicePrices(newP); }} className="h-8 text-xs border-white/10 bg-black/40 text-white" />
+                        <Input value={sp.label} onChange={(e) => { const newP = [...servicePrices]; newP[idx].label = e.target.value; setServicePrices(newP); }} className="h-8 text-xs border-foreground/10 bg-foreground/5 text-foreground" />
                       </div>
                       <div className="col-span-6 sm:col-span-4 space-y-1">
-                        <Input value={sp.price} onChange={(e) => { const newP = [...servicePrices]; newP[idx].price = e.target.value; setServicePrices(newP); }} className="h-8 text-xs border-white/10 bg-black/40 text-white" />
+                        <Input value={sp.price} onChange={(e) => { const newP = [...servicePrices]; newP[idx].price = e.target.value; setServicePrices(newP); }} className="h-8 text-xs border-foreground/10 bg-foreground/5 text-foreground" />
                       </div>
                       <div className="col-span-6 sm:col-span-3 space-y-1">
-                        <Input type="number" value={sp.value} onChange={(e) => { const newP = [...servicePrices]; newP[idx].value = parseInt(e.target.value) || 0; setServicePrices(newP); }} className="h-8 text-xs border-white/10 bg-black/40 text-white" />
+                        <Input type="number" value={sp.value} onChange={(e) => { const newP = [...servicePrices]; newP[idx].value = parseInt(e.target.value) || 0; setServicePrices(newP); }} className="h-8 text-xs border-foreground/10 bg-foreground/5 text-foreground" />
                       </div>
                     </div>
                   ))}
@@ -2020,17 +2025,17 @@ export default function DashboardPage() {
 
                 {/* Support */}
                 <div className="space-y-2">
-                  <h4 className="text-sm font-bold text-slate-300 border-b border-white/10 pb-1">Support Retainer</h4>
+                  <h4 className="text-sm font-bold text-muted-foreground border-b border-foreground/10 pb-1">Support Retainer</h4>
                   {supportPrices.map((sp, idx) => (
-                    <div key={sp.id} className="grid grid-cols-12 gap-3 items-end p-2 rounded-lg border border-white/5 bg-black/20">
+                    <div key={sp.id} className="grid grid-cols-12 gap-3 items-end p-2 rounded-lg border border-foreground/5 bg-black/20">
                       <div className="col-span-12 sm:col-span-5 space-y-1">
-                        <Input value={sp.label} onChange={(e) => { const newP = [...supportPrices]; newP[idx].label = e.target.value; setSupportPrices(newP); }} className="h-8 text-xs border-white/10 bg-black/40 text-white" />
+                        <Input value={sp.label} onChange={(e) => { const newP = [...supportPrices]; newP[idx].label = e.target.value; setSupportPrices(newP); }} className="h-8 text-xs border-foreground/10 bg-foreground/5 text-foreground" />
                       </div>
                       <div className="col-span-6 sm:col-span-4 space-y-1">
-                        <Input value={sp.price} onChange={(e) => { const newP = [...supportPrices]; newP[idx].price = e.target.value; setSupportPrices(newP); }} className="h-8 text-xs border-white/10 bg-black/40 text-white" />
+                        <Input value={sp.price} onChange={(e) => { const newP = [...supportPrices]; newP[idx].price = e.target.value; setSupportPrices(newP); }} className="h-8 text-xs border-foreground/10 bg-foreground/5 text-foreground" />
                       </div>
                       <div className="col-span-6 sm:col-span-3 space-y-1">
-                        <Input type="number" value={sp.value} onChange={(e) => { const newP = [...supportPrices]; newP[idx].value = parseInt(e.target.value) || 0; setSupportPrices(newP); }} className="h-8 text-xs border-white/10 bg-black/40 text-white" />
+                        <Input type="number" value={sp.value} onChange={(e) => { const newP = [...supportPrices]; newP[idx].value = parseInt(e.target.value) || 0; setSupportPrices(newP); }} className="h-8 text-xs border-foreground/10 bg-foreground/5 text-foreground" />
                       </div>
                     </div>
                   ))}
@@ -2041,7 +2046,7 @@ export default function DashboardPage() {
                     type="button" 
                     variant="outline" 
                     onClick={() => setShowEditPricesModal(false)}
-                    className="flex-1 border-white/10 text-slate-300 hover:text-white"
+                    className="flex-1 border-foreground/10 text-muted-foreground hover:text-foreground"
                   >
                     Cancel
                   </Button>
@@ -2068,7 +2073,7 @@ export default function DashboardPage() {
                         setIsSavingPrices(false);
                       }
                     }}
-                    className="flex-1 bg-violet-core hover:bg-violet-glow text-white font-bold border-none"
+                    className="flex-1 bg-violet-core hover:bg-violet-glow text-foreground font-bold border-none"
                   >
                     {isSavingPrices ? "Saving..." : "Save Changes"}
                   </Button>

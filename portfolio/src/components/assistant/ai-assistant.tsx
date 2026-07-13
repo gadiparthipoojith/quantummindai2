@@ -25,6 +25,18 @@ export function AIAssistant() {
     }
   }, [messages, isLoading]);
 
+  useEffect(() => {
+    const handleOpenAdvisor = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      setOpen(true);
+      if (customEvent.detail?.message) {
+        setInput(customEvent.detail.message);
+      }
+    };
+    window.addEventListener("open-advisor", handleOpenAdvisor);
+    return () => window.removeEventListener("open-advisor", handleOpenAdvisor);
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
@@ -60,7 +72,7 @@ export function AIAssistant() {
       if (!reader) throw new Error("No reader");
 
       const assistantId = (Date.now() + 1).toString();
-      // Add empty assistant message to be filled by stream chunks
+
       setMessages((prev) => [
         ...prev,
         { id: assistantId, role: "assistant", content: "" },
@@ -109,15 +121,15 @@ export function AIAssistant() {
         size="icon"
         aria-label="Open AI assistant"
       >
-        <MessageCircle className="h-6 w-6" />
+        <Bot className="h-6 w-6" />
       </Button>
 
       {open && (
-        <div className="fixed bottom-6 right-6 z-50 flex h-[500px] w-[380px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-white/10 bg-obsidian/95 shadow-2xl backdrop-blur-xl">
-          <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+        <div className="fixed bottom-6 right-6 z-50 flex h-[500px] w-[380px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-foreground/10 bg-background/95 shadow-2xl backdrop-blur-xl">
+          <div className="flex items-center justify-between border-b border-foreground/10 px-4 py-3">
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-core to-cyan-pulse">
-                <Bot className="h-4 w-4 text-white" />
+                <Bot className="h-4 w-4 text-foreground" />
               </div>
               <div>
                 <div className="text-sm font-semibold">Aether AI</div>
@@ -133,7 +145,7 @@ export function AIAssistant() {
             {messages.length === 0 && (
               <div className="text-center text-sm text-muted-foreground py-8">
                 <Bot className="mx-auto mb-3 h-8 w-8 text-violet-core" />
-                <p>Hi! I&apos;m Aether AI. Ask about our services, pricing, or tech stack.</p>
+                <p>Hi. I&apos;m Aether, Principal Advisor at Quantum Mind AI. How can I help engineer your next project?</p>
               </div>
             )}
             {messages.map((m) => (
@@ -143,7 +155,7 @@ export function AIAssistant() {
                   "max-w-[85%] rounded-xl px-3 py-2 text-sm leading-6",
                   m.role === "user"
                     ? "ml-auto bg-violet-core/20 text-foreground"
-                    : "bg-white/5 text-muted-foreground"
+                    : "bg-foreground/5 text-muted-foreground"
                 )}
               >
                 {m.content}
@@ -158,7 +170,7 @@ export function AIAssistant() {
             <div ref={chatEndRef} />
           </div>
 
-          <form onSubmit={handleSubmit} className="border-t border-white/10 p-3 flex gap-2">
+          <form onSubmit={handleSubmit} className="border-t border-foreground/10 p-3 flex gap-2">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}

@@ -28,7 +28,7 @@ export function Pricing() {
             <ScrollReveal key={plan.id} delay={i * 0.1}>
               <div
                 className={cn(
-                  "glass relative flex h-full flex-col rounded-2xl p-8",
+                  "glass relative flex h-full flex-col rounded-2xl p-8 transition-all duration-300 hover:-translate-y-2 hover:border-violet-core/50 hover:shadow-xl hover:shadow-violet-core/20",
                   plan.popular && "border-violet-core/50 shadow-lg shadow-violet-core/10"
                 )}
               >
@@ -42,7 +42,7 @@ export function Pricing() {
                 <p className="mt-4 mb-6 text-sm text-muted-foreground">{plan.description}</p>
                 <ul className="mb-8 flex-1 space-y-3">
                   {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2 text-sm text-slate-300">
+                    <li key={feature} className="flex items-start gap-2 text-sm text-muted-foreground">
                       <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-signal" />
                       {feature}
                     </li>
@@ -50,7 +50,7 @@ export function Pricing() {
                 </ul>
                 <Button
                   asChild
-                  variant={plan.popular ? "default" : "secondary"}
+                  variant="hoverHighlight"
                   className="w-full"
                 >
                   <Link href="#contact">{plan.cta}</Link>

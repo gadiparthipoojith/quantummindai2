@@ -32,7 +32,7 @@ export function Skills() {
                         <span>{skill.name}</span>
                         <span className="text-muted-foreground">{skill.level}%</span>
                       </div>
-                      <div className="h-2 overflow-hidden rounded-full bg-white/5">
+                      <div className="h-2 overflow-hidden rounded-full bg-foreground/5">
                         <motion.div
                           initial={{ width: 0 }}
                           whileInView={{ width: `${skill.level}%` }}

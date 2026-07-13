@@ -27,8 +27,8 @@ export function Portfolio() {
     fetchCompletedProjects();
   }, []);
 
-  if (loading || projects.length === 0) {
-    return null; // Don't show the section if loading or no completed projects
+  if (!loading && projects.length === 0) {
+    return <div id="portfolio" aria-hidden="true" />;
   }
 
   return (
@@ -38,7 +38,7 @@ export function Portfolio() {
           <span className="mb-4 inline-block text-sm font-medium uppercase tracking-widest text-emerald-400">
             Portfolio
           </span>
-          <h2 className="mb-4 text-3xl font-bold md:text-4xl lg:text-5xl text-white">
+          <h2 className="mb-4 text-3xl font-bold md:text-4xl lg:text-5xl text-foreground">
             Projects
           </h2>
           <p className="text-muted-foreground text-lg">
@@ -47,49 +47,54 @@ export function Portfolio() {
         </ScrollReveal>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project, i) => {
-            const roadmap = typeof project.roadmap === 'string' ? JSON.parse(project.roadmap || "[]") : (project.roadmap || []);
-            
-            return (
-              <ScrollReveal key={project.id} delay={i * 0.05}>
-                <Card className="h-full group hover:-translate-y-1 bg-black/40 border-white/10 overflow-hidden relative">
-
-                  <CardHeader>
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-400/20 transition-colors group-hover:from-emerald-500/30 group-hover:to-teal-400/30">
-                      <Rocket className="h-6 w-6 text-emerald-400" />
-                    </div>
-                    <CardTitle className="text-white text-xl">{project.projectName}</CardTitle>
-                    <CardDescription className="text-slate-400 font-medium">
-                      Client: {project.clientName}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {roadmap.length > 0 && (
-                      <div className="space-y-3 mt-2">
-                        <p className="text-xs text-slate-500 uppercase font-bold tracking-wider mb-2">Key Deliverables</p>
-                        <ul className="space-y-2">
-                          {roadmap.slice(0, 3).map((milestone: any, index: number) => (
-                            <li
-                              key={index}
-                              className="flex items-start gap-2 text-sm text-slate-300"
-                            >
-                              <ArrowRight className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
-                              <span className="line-clamp-2">{milestone.title}</span>
-                            </li>
-                          ))}
-                          {roadmap.length > 3 && (
-                            <li className="text-xs text-slate-500 italic pl-6">
-                              + {roadmap.length - 3} more phases completed
-                            </li>
-                          )}
-                        </ul>
+          {loading ? (
+            <div className="col-span-full text-center py-12 text-muted-foreground">
+              Loading projects...
+            </div>
+          ) : (
+            projects.map((project, i) => {
+              const roadmap = typeof project.roadmap === 'string' ? JSON.parse(project.roadmap || "[]") : (project.roadmap || []);
+              
+              return (
+                <ScrollReveal key={project.id} delay={i * 0.05}>
+                  <Card className="h-full group hover:-translate-y-1 bg-foreground/5 border-foreground/10 overflow-hidden relative">
+                    <CardHeader>
+                      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-400/20 transition-colors group-hover:from-emerald-500/30 group-hover:to-teal-400/30">
+                        <Rocket className="h-6 w-6 text-emerald-400" />
                       </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </ScrollReveal>
-            );
-          })}
+                      <CardTitle className="text-foreground text-xl">{project.projectName}</CardTitle>
+                      <CardDescription className="text-muted-foreground font-medium">
+                        Client: {project.clientName}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {roadmap.length > 0 && (
+                        <div className="space-y-3 mt-2">
+                          <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider mb-2">Key Deliverables</p>
+                          <ul className="space-y-2">
+                            {roadmap.slice(0, 3).map((milestone: any, index: number) => (
+                              <li
+                                key={index}
+                                className="flex items-start gap-2 text-sm text-muted-foreground"
+                              >
+                                <ArrowRight className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                                <span className="line-clamp-2">{milestone.title}</span>
+                              </li>
+                            ))}
+                            {roadmap.length > 3 && (
+                              <li className="text-xs text-muted-foreground italic pl-6">
+                                + {roadmap.length - 3} more phases completed
+                              </li>
+                            )}
+                          </ul>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </ScrollReveal>
+              );
+            })
+          )}
         </div>
       </div>
     </section>

@@ -60,8 +60,8 @@ export default function ResumePage() {
           </div>
 
           {/* Resume Card */}
-          <div className="glass rounded-3xl p-8 md:p-12 shadow-xl bg-obsidian/30 border-white/10 print:border-none print:bg-transparent print:shadow-none print:p-0">
-            <header className="border-b border-white/10 pb-8 mb-8 print:border-zinc-300">
+          <div className="glass rounded-3xl p-8 md:p-12 shadow-xl bg-background/30 border-foreground/10 print:border-none print:bg-transparent print:shadow-none print:p-0">
+            <header className="border-b border-foreground/10 pb-8 mb-8 print:border-zinc-300">
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                 <div>
                   <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">Gadiparthi Poojith</h1>
@@ -97,13 +97,13 @@ export default function ResumePage() {
               </h3>
               <div className="grid gap-6 sm:grid-cols-3">
                 {skillCategories.map((cat, index) => (
-                  <div key={index} className="glass p-4 rounded-xl border-white/5 print:border-zinc-200">
+                  <div key={index} className="glass p-4 rounded-xl border-foreground/5 print:border-zinc-200">
                     <h4 className="font-bold text-sm text-foreground mb-3 print:text-black">{cat.name}</h4>
                     <div className="flex flex-wrap gap-1.5">
                       {cat.skills.map((skill) => (
                         <span
                           key={skill}
-                          className="rounded bg-white/5 border border-white/10 px-2 py-0.5 text-xs text-muted-foreground print:bg-zinc-100 print:text-zinc-800 print:border-zinc-200"
+                          className="rounded bg-foreground/5 border border-foreground/10 px-2 py-0.5 text-xs text-muted-foreground print:bg-zinc-100 print:text-zinc-800 print:border-zinc-200"
                         >
                           {skill}
                         </span>

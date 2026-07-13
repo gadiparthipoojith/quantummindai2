@@ -1,9 +1,15 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 import openai
 import os
 
 app = FastAPI(title="AI Email Generator API")
+
+@app.get("/")
+def read_root():
+    return RedirectResponse(url="/docs")
+
 
 class EmailRequest(BaseModel):
     recipient_name: str
