@@ -228,6 +228,59 @@ export default function DashboardPage() {
     }
   };
 
+  const [showEditUserModal, setShowEditUserModal] = useState(false);
+  const [editingUserId, setEditingUserId] = useState("");
+  const [editingUserName, setEditingUserName] = useState("");
+  const [editingUserRole, setEditingUserRole] = useState("client");
+  const [editingUserPasscode, setEditingUserPasscode] = useState("");
+  const [isEditingUser, setIsEditingUser] = useState(false);
+
+  const generateEditPasscode = () => {
+    const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+    setEditingUserPasscode(random);
+  };
+
+  const openEditModal = (u: any) => {
+    setEditingUserId(u.id);
+    setEditingUserName(u.name);
+    setEditingUserRole(u.role);
+    setEditingUserPasscode(u.passcode);
+    setShowEditUserModal(true);
+  };
+
+  const handleEditUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsEditingUser(true);
+    try {
+      const res = await fetch("/api/users", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: editingUserId,
+          name: editingUserName,
+          role: editingUserRole,
+          passcode: editingUserPasscode
+        }),
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        alert(error.error || "Failed to update user.");
+      } else {
+        setShowEditUserModal(false);
+        setEditingUserId("");
+        setEditingUserName("");
+        setEditingUserRole("client");
+        setEditingUserPasscode("");
+        fetchDatabase();
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error updating user.");
+    } finally {
+      setIsEditingUser(false);
+    }
+  };
+
   const handleDeleteUser = async (id: string) => {
     if (!confirm("Are you sure you want to delete this user?")) return;
     try {
@@ -442,6 +495,16 @@ export default function DashboardPage() {
 
     return { totalSetup, supportMonthly, time };
   };
+
+  // Dynamic metrics calculated based on project status and client data
+  const activeProjects = projects.filter(p => p.progress < 100);
+  const activeClientsCount = new Set(activeProjects.map(p => p.clientId)).size;
+  const collaboratedClientsCount = clients.length;
+
+  const activePipelineSum = activeProjects.reduce((sum, p) => {
+    const num = parseInt(p.budget.replace(/[^0-9]/g, ""), 10);
+    return sum + (isNaN(num) ? 0 : num);
+  }, 0);
 
   const { totalSetup, supportMonthly, time } = calculateEstimate();
 
@@ -834,7 +897,7 @@ export default function DashboardPage() {
                   /* Founder Dashboard view */
                   <>
                     {/* Founder Aggregate Metrics */}
-                    <div className="grid gap-4 sm:grid-cols-3">
+                    <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
                       <Card className="glass border-foreground/10 p-5 bg-gradient-to-br from-violet-core/5 to-slate-900/50">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-xl bg-violet-core/10 border border-violet-core/20 flex items-center justify-center text-violet-glow flex-shrink-0">
@@ -842,7 +905,9 @@ export default function DashboardPage() {
                           </div>
                           <div>
                             <span className="text-xxs uppercase tracking-wider text-muted-foreground font-bold">Total active Pipeline</span>
-                            <h3 className="text-2xl font-bold text-slate-100 mt-0.5">₹7,50,000</h3>
+                            <h3 className="text-2xl font-bold text-slate-100 mt-0.5">
+                              ₹{activePipelineSum.toLocaleString("en-IN")}
+                            </h3>
                           </div>
                         </div>
                       </Card>
@@ -853,18 +918,35 @@ export default function DashboardPage() {
                           </div>
                           <div>
                             <span className="text-xxs uppercase tracking-wider text-muted-foreground font-bold">Active Clients</span>
-                            <h3 className="text-2xl font-bold text-slate-100 mt-0.5">3 Brands</h3>
+                            <h3 className="text-2xl font-bold text-slate-100 mt-0.5">
+                              {activeClientsCount} {activeClientsCount === 1 ? "Brand" : "Brands"}
+                            </h3>
                           </div>
                         </div>
                       </Card>
                       <Card className="glass border-foreground/10 p-5 bg-gradient-to-br from-violet-core/5 to-slate-900/50">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-xl bg-violet-core/10 border border-violet-core/20 flex items-center justify-center text-violet-glow flex-shrink-0">
+                            <UserCheck className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <span className="text-xxs uppercase tracking-wider text-muted-foreground font-bold">Collaborated Clients</span>
+                            <h3 className="text-2xl font-bold text-slate-100 mt-0.5">
+                              {collaboratedClientsCount} {collaboratedClientsCount === 1 ? "Brand" : "Brands"}
+                            </h3>
+                          </div>
+                        </div>
+                      </Card>
+                      <Card className="glass border-foreground/10 p-5 bg-gradient-to-br from-cyan-pulse/5 to-slate-900/50">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-xl bg-cyan-pulse/10 border border-cyan-pulse/20 flex items-center justify-center text-cyan-pulse flex-shrink-0">
                             <TrendingUp className="h-5 w-5" />
                           </div>
                           <div>
                             <span className="text-xxs uppercase tracking-wider text-muted-foreground font-bold">Studio Operations</span>
-                            <h3 className="text-2xl font-bold text-slate-100 mt-0.5">Healthy (100%)</h3>
+                            <h3 className="text-2xl font-bold text-slate-100 mt-0.5">
+                              Healthy ({projects.length > 0 ? Math.round((projects.filter(p => p.progress === 100).length / projects.length) * 100) : 100}%)
+                            </h3>
                           </div>
                         </div>
                       </Card>
@@ -1606,7 +1688,10 @@ export default function DashboardPage() {
                                   {user.passcode}
                                 </td>
                                 <td className="px-4 py-3 text-muted-foreground">{new Date(user.createdAt).toLocaleString()}</td>
-                                <td className="px-4 py-3 text-right">
+                                <td className="px-4 py-3 text-right flex items-center justify-end gap-2">
+                                  <Button variant="ghost" size="sm" onClick={() => openEditModal(user)} className="text-violet-glow hover:text-violet-400 hover:bg-violet-500/10 h-8 px-2">
+                                    Edit
+                                  </Button>
                                   {user.role !== "admin" && (
                                     <Button variant="ghost" size="sm" onClick={() => handleDeleteUser(user.id)} className="text-red-400 hover:text-red-300 hover:bg-red-400/10 h-8 px-2">
                                       Delete
@@ -1951,6 +2036,86 @@ export default function DashboardPage() {
                 <div className="pt-2">
                   <Button type="submit" disabled={isCreatingUser} className="w-full bg-emerald-600 hover:bg-emerald-500 text-foreground font-bold tracking-wide border-none">
                     {isCreatingUser ? "Creating..." : "Create User Access"}
+                  </Button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* EDIT ACCESS MODAL */}
+      <AnimatePresence>
+        {showEditUserModal && (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowEditUserModal(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0, y: 10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              className="relative w-full max-w-md overflow-hidden rounded-2xl border border-foreground/10 bg-slate-950 p-6 shadow-2xl glass"
+            >
+              <button
+                onClick={() => setShowEditUserModal(false)}
+                className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground hover:bg-foreground/5 hover:text-muted-foreground"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-slate-100 flex items-center gap-2">
+                  <Key className="h-5 w-5 text-emerald-400" /> Edit Access
+                </h3>
+                <p className="text-sm text-muted-foreground mt-1">Modify user passcode and access roles.</p>
+              </div>
+
+              <form onSubmit={handleEditUser} className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-muted-foreground">Full Name</label>
+                  <Input 
+                    required
+                    value={editingUserName}
+                    onChange={(e) => setEditingUserName(e.target.value)}
+                    placeholder="e.g. John Doe"
+                    className="h-10 border-foreground/10 bg-black/20 focus-visible:ring-emerald-500 text-foreground"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-muted-foreground">Role</label>
+                  <select
+                    required
+                    value={editingUserRole}
+                    onChange={(e) => setEditingUserRole(e.target.value)}
+                    className="w-full h-10 rounded-lg border border-foreground/10 bg-black/20 px-3 text-sm text-foreground focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors"
+                  >
+                    <option value="client">Client</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-muted-foreground">Passcode</label>
+                  <div className="flex gap-2">
+                    <Input 
+                      required
+                      value={editingUserPasscode}
+                      onChange={(e) => setEditingUserPasscode(e.target.value)}
+                      placeholder="Secret passcode"
+                      className="h-10 border-foreground/10 bg-black/20 focus-visible:ring-emerald-500 text-foreground font-mono"
+                    />
+                    <Button type="button" onClick={generateEditPasscode} variant="outline" className="border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 h-10">
+                      Auto-Gen
+                    </Button>
+                  </div>
+                </div>
+                <div className="pt-2">
+                  <Button type="submit" disabled={isEditingUser} className="w-full bg-emerald-600 hover:bg-emerald-500 text-foreground font-bold tracking-wide border-none">
+                    {isEditingUser ? "Saving..." : "Save Changes"}
                   </Button>
                 </div>
               </form>

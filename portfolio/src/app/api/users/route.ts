@@ -56,3 +56,39 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: "Internal server error." }, { status: 500 });
   }
 }
+
+export async function PUT(req: Request) {
+  try {
+    const body = await req.json();
+    const { id, name, role, passcode } = body;
+
+    if (!id || !name || !role || !passcode) {
+      return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
+    }
+
+    const existing = await prisma.user.findFirst({
+      where: {
+        passcode: passcode.toLowerCase(),
+        id: { not: id }
+      }
+    });
+
+    if (existing) {
+      return NextResponse.json({ error: "Passcode already exists. Please choose a different one." }, { status: 400 });
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: {
+        name,
+        role,
+        passcode: passcode.toLowerCase(),
+      }
+    });
+
+    return NextResponse.json({ success: true, data: updatedUser });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
+  }
+}
