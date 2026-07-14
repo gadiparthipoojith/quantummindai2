@@ -72,7 +72,7 @@ export function Pricing() {
             <Button
               asChild
               size="lg"
-              className="font-bold bg-gradient-to-r from-violet-core to-cyan-pulse text-white shadow-lg hover:shadow-violet-core/25 transition-all"
+              className="font-bold"
             >
               <Link href="/dashboard?tab=calculator">Interactive Cost Estimator</Link>
             </Button>

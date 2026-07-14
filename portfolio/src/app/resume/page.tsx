@@ -65,7 +65,7 @@ export default function ResumePage() {
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                 <div>
                   <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">Gadiparthi Poojith</h1>
-                  <h2 className="text-xl text-violet-core font-medium mb-4 print:text-indigo-600">AI Engineer (Freelance), Senior Full Stack & AI Developer (Freelance)</h2>
+                  <h2 className="text-xl text-violet-core font-medium mb-4 print:text-indigo-600">AI Engineer, Full Stack & AI Developer</h2>
                   <p className="text-muted-foreground text-sm max-w-xl print:text-zinc-600">
                     High-performance developer specializing in building production-ready AI agents, stateful RAG applications, automation pipelines, and modern SaaS products.
                   </p>
@@ -73,7 +73,7 @@ export default function ResumePage() {
                 <div className="flex flex-col gap-2 text-sm text-muted-foreground print:text-zinc-700">
                   <span className="flex items-center gap-2">
                     <Mail className="h-4 w-4 text-violet-core print:text-indigo-600" />
-                    poojith@quantummind.dev
+                    info@qmaiinovations.in
                   </span>
                   <span className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-violet-core print:text-indigo-600" />

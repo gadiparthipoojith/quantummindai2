@@ -33,7 +33,7 @@ export const studio = {
   tagline: "We Engineer Intelligence.",
   description:
     "A boutique software engineering studio dedicated to crafting elegant AI systems, robust platforms, and beautiful digital experiences for ambitious businesses.",
-  email: "hello@quantummind.dev",
+  email: "info@qmaiinovations.in",
   location: "Remote · Worldwide",
   founded: "2026",
 } as const;

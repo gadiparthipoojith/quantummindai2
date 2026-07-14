@@ -11,11 +11,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-gradient-to-r from-violet-core to-cyan-pulse text-white shadow-lg shadow-violet-core/25 hover:shadow-violet-core/40 hover:scale-[1.02]",
+          "bg-slate-900/80 backdrop-blur-md border border-slate-700/60 text-slate-100 shadow-md shadow-black/10 hover:bg-gradient-to-r hover:from-sky-600 hover:to-cyan-500 hover:border-transparent hover:text-white hover:shadow-lg hover:shadow-sky-500/30 hover:scale-[1.02]",
         secondary:
           "glass border border-foreground/10 text-foreground hover:bg-foreground/10 hover:border-violet-core/30",
         hoverHighlight:
-          "glass border border-foreground/10 text-foreground hover:!bg-gradient-to-r hover:!from-violet-core hover:!to-cyan-pulse hover:text-white hover:border-transparent hover:shadow-lg hover:shadow-violet-core/40 hover:scale-[1.02]",
+          "glass border border-foreground/10 text-foreground hover:!bg-gradient-to-r hover:!from-sky-600 hover:!to-cyan-500 hover:text-white hover:border-transparent hover:shadow-lg hover:shadow-sky-500/30 hover:scale-[1.02]",
         outline:
           "border border-violet-core/30 bg-transparent hover:bg-violet-core/10 text-foreground",
         ghost: "hover:bg-foreground/5 text-foreground",

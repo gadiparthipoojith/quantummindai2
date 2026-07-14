@@ -33,6 +33,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Logo } from "@/components/layout/logo";
 
 
 type UserRole = "public" | "admin" | "client_acme" | "client_nova" | "client_apex";
@@ -553,11 +554,9 @@ export default function DashboardPage() {
           {/* Logo Brand Header */}
           <div className="p-6 border-b border-foreground/5 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-violet-core to-cyan-pulse text-sm font-bold text-white transition-transform group-hover:scale-105">
-                QM
-              </div>
+              <Logo className="h-9 w-9" />
               <span className="font-semibold tracking-tight text-slate-100">
-                QuantumMind<span className="text-violet-core"> AI</span>
+                Quantum Mind <span className="text-violet-core">AI Innovations</span>
               </span>
             </Link>
           </div>
@@ -689,12 +688,10 @@ export default function DashboardPage() {
                 className="fixed left-0 top-0 bottom-0 w-64 border-r border-foreground/5 bg-slate-950 z-40 flex flex-col lg:hidden"
               >
                 <div className="p-6 border-b border-foreground/5 flex items-center justify-between">
-                  <Link href="/" className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-core to-cyan-pulse text-xs font-bold text-white">
-                      QM
-                    </div>
+                  <Link href="/" className="flex items-center gap-2 group">
+                    <Logo className="h-8 w-8" />
                     <span className="font-semibold tracking-tight text-sm text-slate-100">
-                      QuantumMind<span className="text-violet-core"> AI</span>
+                      Quantum Mind <span className="text-violet-core">AI Innovations</span>
                     </span>
                   </Link>
                   <button
@@ -1153,7 +1150,7 @@ export default function DashboardPage() {
                             type="button"
                             className={`rounded-xl border p-3 text-left transition-all cursor-pointer ${
                               tier === c.id
-                                ? "border-violet-core bg-violet-core/10 text-violet-glow"
+                                ? "border-slate-500 bg-slate-800/40 text-slate-200"
                                 : "border-foreground/10 hover:border-foreground/20 bg-foreground/5 text-muted-foreground hover:text-foreground"
                             }`}
                           >
@@ -1175,7 +1172,7 @@ export default function DashboardPage() {
                               key={item.id}
                               className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition ${
                                 isSelected 
-                                  ? "border-violet-core bg-violet-core/5" 
+                                  ? "border-slate-500 bg-slate-800/20" 
                                   : "border-foreground/5 bg-foreground/5 hover:bg-foreground/10"
                               }`}
                             >
@@ -1183,12 +1180,12 @@ export default function DashboardPage() {
                                 type="checkbox"
                                 checked={isSelected}
                                 onChange={(e) => setServices(prev => ({ ...prev, [item.id]: e.target.checked }))}
-                                className="mt-1 accent-violet-core cursor-pointer"
+                                className="mt-1 accent-slate-400 cursor-pointer"
                               />
                               <div className="flex-1">
                                 <div className="flex items-center justify-between">
                                   <span className="text-xs font-bold text-slate-100">{item.label}</span>
-                                  <span className="text-[10px] font-bold text-violet-glow">{item.price}</span>
+                                  <span className="text-[10px] font-bold text-slate-300">{item.price}</span>
                                 </div>
                                 <span className="text-[10px] text-muted-foreground block leading-tight mt-0.5">{item.desc}</span>
                               </div>
@@ -1209,7 +1206,7 @@ export default function DashboardPage() {
                             type="button"
                             className={`rounded-xl border p-2 text-center transition cursor-pointer ${
                               support === s.id
-                                ? "border-violet-core bg-violet-core/10 text-violet-glow"
+                                ? "border-slate-500 bg-slate-800/40 text-slate-200"
                                 : "border-foreground/10 hover:border-foreground/20 bg-foreground/5 text-muted-foreground hover:text-foreground"
                             }`}
                           >
@@ -1222,11 +1219,11 @@ export default function DashboardPage() {
                   </div>
 
                   {/* CALCULATOR OUTCOME */}
-                  <div className="glass rounded-3xl p-6 border-foreground/10 bg-violet-core/5 flex flex-col justify-between relative overflow-hidden">
-                    <div className="absolute top-0 right-0 h-24 w-24 bg-violet-core/5 blur-2xl pointer-events-none" />
+                  <div className="glass rounded-3xl p-6 border-foreground/10 bg-slate-900/40 flex flex-col justify-between relative overflow-hidden">
+                    <div className="absolute top-0 right-0 h-24 w-24 bg-slate-800/10 blur-2xl pointer-events-none" />
                     
                     <div className="space-y-6">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-violet-glow border-b border-foreground/5 pb-2">Estimated Investment</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 border-b border-foreground/5 pb-2">Estimated Investment</h4>
                       <div className="space-y-4">
                         <div>
                           <span className="text-xs text-muted-foreground block">Development Timeline</span>
@@ -1419,7 +1416,12 @@ export default function DashboardPage() {
                         Clear Application Cache
                       </Button>
                       <Button variant="outline" className="w-full justify-start border-foreground/10 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-colors h-11">
-                        <a href="http://localhost:5555" target="_blank" rel="noreferrer" className="flex items-center w-full">
+                        <a 
+                          href={typeof window !== "undefined" && !window.location.hostname.includes("localhost") ? "https://console.prisma.io" : "http://localhost:5555"} 
+                          target="_blank" 
+                          rel="noreferrer" 
+                          className="flex items-center w-full"
+                        >
                           <Database className="mr-2 h-4 w-4 text-emerald-400" />
                           Open Prisma Studio Portal
                         </a>
@@ -1930,7 +1932,7 @@ export default function DashboardPage() {
                         value={step.status} 
                         onChange={(e) => {
                           const newRoadmap = [...updateRoadmap];
-                          newRoadmap[idx] = { ...newRoadmap[idx], status: e.target.value };
+                          newRoadmap[idx] = { ...newRoadmap[idx], status: e.target.value as "Completed" | "In Progress" | "Scheduled" };
                           setUpdateRoadmap(newRoadmap);
                           
                           const completed = newRoadmap.filter(s => s.status === "Completed").length;
