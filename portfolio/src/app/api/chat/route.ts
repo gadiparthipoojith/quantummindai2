@@ -1,7 +1,7 @@
 import { streamText } from "ai";
 import { openai } from "@ai-sdk/openai";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 const systemPrompt = `You are Aether, the Principal AI Advisor for Quantum Mind AI.
 Quantum Mind AI is a boutique software engineering studio founded by Gadiparthi Poojith (AI & Full Stack Engineer) and Surya Antarvedi (Data Scientist & Analyst).
