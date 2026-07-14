@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && prisma db push && tsx prisma/seed.ts && next build",
-    "pages:build": "prisma generate && npx @cloudflare/next-on-pages",
+    "cf:build": "prisma generate && next build",
+    "pages:build": "npx @cloudflare/next-on-pages --build-command 'npm run cf:build'",
     "start": "next start",
     "lint": "eslint"
   },
