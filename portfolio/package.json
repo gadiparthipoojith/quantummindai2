@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && prisma db push && tsx prisma/seed.ts && next build",
-    "cf:build": "prisma generate && next build",
-    "pages:build": "npx @cloudflare/next-on-pages --build-command 'npm run cf:build'",
+    "build": "prisma generate && next build",
+    "build:local": "prisma generate && prisma db push && tsx prisma/seed.ts && next build",
+    "pages:build": "npx @cloudflare/next-on-pages",
     "start": "next start",
     "lint": "eslint"
   },
