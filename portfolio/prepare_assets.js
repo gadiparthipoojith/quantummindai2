@@ -152,23 +152,29 @@ function copyFolderRecursiveSync(source, target) {
     }
 }
 
-console.log("Preparing assets...");
-if (fs.existsSync('assets')) {
-    deleteFolderRecursive('assets');
+console.log("Preparing assets inside .open-next/assets directory...");
+const targetAssetsDir = '.open-next/assets';
+
+if (!fs.existsSync(targetAssetsDir)) {
+    fs.mkdirSync(targetAssetsDir, { recursive: true });
 }
-fs.mkdirSync('assets', { recursive: true });
 
 if (fs.existsSync('.open-next/worker.js')) {
-    fs.copyFileSync('.open-next/worker.js', 'assets/_worker.js');
-    console.log("Copied worker.js to assets/_worker.js");
+    fs.copyFileSync('.open-next/worker.js', path.join(targetAssetsDir, '_worker.js'));
+    console.log("Copied worker.js to .open-next/assets/_worker.js");
 }
 
 const foldersToCopy = ['cloudflare', 'middleware', '.build', 'server-functions'];
 foldersToCopy.forEach(folder => {
     const src = path.join('.open-next', folder);
     if (fs.existsSync(src)) {
-        copyFolderRecursiveSync(src, 'assets');
-        console.log(`Copied ${folder} folder recursively to assets/${folder}`);
+        // Remove existing target folder to avoid nestings on multiple runs
+        const targetSubFolder = path.join(targetAssetsDir, folder);
+        if (fs.existsSync(targetSubFolder)) {
+            deleteFolderRecursive(targetSubFolder);
+        }
+        copyFolderRecursiveSync(src, targetAssetsDir);
+        console.log(`Copied ${folder} folder recursively to ${targetSubFolder}`);
     }
 });
 
