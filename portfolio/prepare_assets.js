@@ -48,10 +48,6 @@ function cleanDirectory(dir) {
             if (
                 ext === '.node' || 
                 ext === '.map' || 
-                name === 'query_engine_bg.mysql.wasm' || 
-                name === 'query_engine_bg.sqlite.wasm' ||
-                name === 'query_compiler_fast_bg.wasm' ||
-                name === 'query_compiler_fast_bg.wasm-base64.js' ||
                 name === 'capsize-font-metrics.json' ||
                 name === 'readme.md' ||
                 name === 'license' ||
