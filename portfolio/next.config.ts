@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "**/*": ["prisma/**/*"],
   },
+  serverExternalPackages: ["pg", "pg-cloudflare"],
 };
 
 export default nextConfig;
