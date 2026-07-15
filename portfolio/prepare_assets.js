@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 console.log("Cleaning up unnecessary heavy files and references from .open-next to reduce bundle size...");
 
@@ -49,7 +50,19 @@ processDirectory('.open-next', (filePath) => {
     }
 });
 
-// 2. Perform file cleanups
+// 2. Minify handler.mjs to decrease the size under the 3MB limit
+const handlerPath = '.open-next/server-functions/default/handler.mjs';
+if (fs.existsSync(handlerPath)) {
+    try {
+        console.log("Minifying handler.mjs with esbuild...");
+        execSync(`npx esbuild "${handlerPath}" --minify --allow-overwrite --outfile="${handlerPath}"`, { stdio: 'inherit' });
+        console.log("Minification complete!");
+    } catch (err) {
+        console.warn("Warning: failed to minify handler.mjs with esbuild:", err.message);
+    }
+}
+
+// 3. Perform file cleanups
 function deleteFolderRecursive(folderPath) {
     if (fs.existsSync(folderPath)) {
         fs.readdirSync(folderPath).forEach((file) => {
@@ -108,7 +121,7 @@ cleanDirectory('.open-next/server-functions');
 cleanDirectory('.open-next/cloudflare');
 cleanDirectory('.open-next/middleware');
 
-// 3. Prepare assets by copying directories
+// 4. Prepare assets by copying directories
 function copyFolderRecursiveSync(source, target) {
     if (!fs.existsSync(source)) return;
     const targetFolder = path.join(target, path.basename(source));
