@@ -73,20 +73,23 @@ export default function DashboardPage() {
   const [passcode, setPasscode] = useState("");
   const [loginError, setLoginError] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-
+  const [loginType, setLoginType] = useState<"client" | "admin">("client");
 
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [isLoadingProjects, setIsLoadingProjects] = useState(false);
 
-
-  const [activeTab, setActiveTab] = useState<"overview" | "calculator" | "documents" | "devtools" | "projects" | "access">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "documents" | "devtools" | "projects" | "access">("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Sync active tab with search parameter from URL on client side
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const tab = params.get("tab");
-    if (tab === "calculator" || tab === "overview" || tab === "documents" || tab === "devtools" || tab === "projects" || tab === "access") {
+    if (tab === "calculator") {
+      window.location.href = "/cost-estimator";
+      return;
+    }
+    if (tab === "overview" || tab === "documents" || tab === "devtools" || tab === "projects" || tab === "access") {
       setActiveTab(tab as any);
     }
   }, []);
@@ -322,6 +325,17 @@ export default function DashboardPage() {
       const data = await res.json();
 
       if (res.ok && data.success) {
+        if (loginType === "admin" && data.user.role !== "admin") {
+          setLoginError("This passcode is for a client workspace. Please switch to Clients Login.");
+          setIsLoggingIn(false);
+          return;
+        }
+        if (loginType === "client" && data.user.role === "admin") {
+          setLoginError("This passcode is for the admin console. Please switch to Admin Login.");
+          setIsLoggingIn(false);
+          return;
+        }
+
         setRole(data.user.role);
         setUserId(data.user.id);
         const displayName = data.user.role === "admin" 
@@ -540,6 +554,101 @@ export default function DashboardPage() {
     );
   };
 
+  if (role === "public") {
+    return (
+      <div className="flex min-h-screen w-screen items-center justify-center bg-slate-950 text-slate-100 font-sans relative overflow-hidden p-4">
+        {/* Background glow effects */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+          <div className="absolute top-0 left-1/4 h-[500px] w-[500px] rounded-full bg-violet-core/5 blur-[120px]" />
+          <div className="absolute bottom-10 right-1/4 h-[400px] w-[400px] rounded-full bg-cyan-pulse/5 blur-[100px]" />
+        </div>
+        
+        <div className="absolute top-6 left-6 z-20">
+          <Button asChild variant="ghost" size="sm" className="hover:bg-foreground/5 h-8">
+            <Link href="/">
+              <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
+              Back to Portfolio
+            </Link>
+          </Button>
+        </div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="glass max-w-sm w-full rounded-3xl p-6 border-foreground/10 bg-slate-900/60 shadow-2xl relative z-10 animate-fade-in"
+        >
+          <div className="flex flex-col items-center text-center mb-6">
+            <Link href="/" className="flex items-center gap-2 mb-4 group">
+              <Logo className="h-10 w-10 transition-transform duration-500 group-hover:rotate-180" />
+            </Link>
+            <h3 className="text-xl font-bold tracking-tight text-slate-100">Workspace Sign In</h3>
+            <p className="text-[11px] text-muted-foreground mt-1 max-w-[280px]">
+              Access your personalized workspace metrics, active timeline tracking, and SOW documents.
+            </p>
+          </div>
+
+          {/* Login Type Tabs */}
+          <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-foreground/5 border border-foreground/5 mb-5">
+            <button
+              onClick={() => {
+                setLoginType("client");
+                setLoginError("");
+              }}
+              type="button"
+              className={`py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                loginType === "client"
+                  ? "bg-violet-core text-white"
+                  : "text-muted-foreground hover:text-slate-100"
+              }`}
+            >
+              Clients Login
+            </button>
+            <button
+              onClick={() => {
+                setLoginType("admin");
+                setLoginError("");
+              }}
+              type="button"
+              className={`py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                loginType === "admin"
+                  ? "bg-violet-core text-white"
+                  : "text-muted-foreground hover:text-slate-100"
+              }`}
+            >
+              Admin Login
+            </button>
+          </div>
+
+          {loginError && (
+            <div className="mb-4 rounded-lg bg-rose-500/10 border border-rose-500/20 p-2.5 text-center text-xs text-rose-400">
+              {loginError}
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-1">
+              <label className="text-[9px] font-bold uppercase tracking-wider text-slate-300">
+                {loginType === "admin" ? "Founder Security Passcode" : "Secure Partner Passcode"}
+              </label>
+              <Input 
+                type="password" 
+                placeholder={loginType === "admin" ? "Enter admin passcode..." : "Enter client passcode..."}
+                value={passcode}
+                onChange={(e) => setPasscode(e.target.value)}
+                className="h-10 border-foreground/10 bg-black/20 focus-visible:ring-violet-core text-foreground"
+                autoFocus
+              />
+            </div>
+            <Button type="submit" className="w-full h-10 font-bold text-xs bg-violet-core hover:bg-violet-glow text-white transition-all">
+              {isLoggingIn ? "Authenticating..." : loginType === "admin" ? "Unlock Admin Console" : "Unlock Client Portal"}
+            </Button>
+          </form>
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="flex h-screen w-screen overflow-hidden bg-slate-950 text-slate-100 font-sans relative">
@@ -565,7 +674,6 @@ export default function DashboardPage() {
           <div className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
             {[
               { id: "overview", label: "Overview", icon: LayoutDashboard, lock: role === "public" },
-              { id: "calculator", label: "Project Cost Estimator", icon: Calculator, lock: false },
               { id: "documents", label: "Agreements & Docs", icon: FileText, lock: role === "public" }
             ].map((item) => {
               const isActive = activeTab === item.id;
@@ -706,7 +814,6 @@ export default function DashboardPage() {
                 <div className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
                   {[
                     { id: "overview", label: "Overview", icon: LayoutDashboard, lock: role === "public" },
-                    { id: "calculator", label: "Project Cost Estimator", icon: Calculator, lock: false },
                     { id: "documents", label: "Agreements & Docs", icon: FileText, lock: role === "public" }
                   ].map((item) => {
                     const isActive = activeTab === item.id;
@@ -871,14 +978,12 @@ export default function DashboardPage() {
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-slate-100">
                 {activeTab === "overview" && "Milestone Overview & Tracking"}
-                {activeTab === "calculator" && "Interactive Cost Estimator"}
                 {activeTab === "documents" && "Workspace Folders & Agreements"}
                 {activeTab === "devtools" && "Developer & Admin Tools"}
                 {activeTab === "projects" && "Manage Projects"}
               </h1>
               <p className="text-xs text-muted-foreground mt-1 max-w-2xl">
                 {activeTab === "overview" && "Monitor active pipeline execution milestones, timeline tracking, and budgets."}
-                {activeTab === "calculator" && "Tailor project development services to calculate custom budgets in Indian Rupees (₹)."}
                 {activeTab === "documents" && "Access and review statements of work, HIPAA agreements, and contract files."}
                 {activeTab === "devtools" && "Manage system database, view logs, and configure internal settings."}
                 {activeTab === "projects" && "Upload new projects and update milestone statuses."}
@@ -1114,140 +1219,7 @@ export default function DashboardPage() {
               </div>
             )}
 
-            {activeTab === "calculator" && (
-              <Card className="glass border-foreground/10">
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <CardTitle>Project Cost Estimator (INR)</CardTitle>
-                      <CardDescription>
-                        Configure your desired services to estimate timeline and development costs in Indian Rupees (₹).
-                      </CardDescription>
-                    </div>
-                    {role === "admin" && signedInName.toLowerCase().includes("poojith") && (
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={() => setShowEditPricesModal(true)}
-                        className="h-8 border-violet-core/30 text-violet-glow hover:bg-violet-core/10 whitespace-nowrap"
-                      >
-                        <Settings className="w-4 h-4 mr-2" />
-                        Edit Prices
-                      </Button>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="grid gap-8 md:grid-cols-2">
-                  <div className="space-y-6">
-                    {/* TIER SELECTION */}
-                    <div>
-                      <label className="text-sm font-semibold mb-2 block text-muted-foreground">1. Project Development Tier</label>
-                      <div className="grid grid-cols-3 gap-2">
-                        {tierPrices.map((c) => (
-                          <button
-                            key={c.id}
-                            onClick={() => setTier(c.id as any)}
-                            type="button"
-                            className={`rounded-xl border p-3 text-left transition-all cursor-pointer ${
-                              tier === c.id
-                                ? "border-slate-500 bg-slate-800/40 text-slate-200"
-                                : "border-foreground/10 hover:border-foreground/20 bg-foreground/5 text-muted-foreground hover:text-foreground"
-                            }`}
-                          >
-                            <span className="text-xs font-bold block">{c.label}</span>
-                            <span className="text-[10px] mt-0.5 block">{c.price}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
 
-                    {/* SERVICES SELECTION */}
-                    <div className="space-y-3">
-                      <label className="text-sm font-semibold block text-muted-foreground">2. Select Targeted Services & Modules</label>
-                      <div className="grid gap-2.5 sm:grid-cols-2">
-                        {servicePrices.map((item) => {
-                          const isSelected = !!services[item.id];
-                          return (
-                            <label
-                              key={item.id}
-                              className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition ${
-                                isSelected 
-                                  ? "border-slate-500 bg-slate-800/20" 
-                                  : "border-foreground/5 bg-foreground/5 hover:bg-foreground/10"
-                              }`}
-                            >
-                              <input
-                                type="checkbox"
-                                checked={isSelected}
-                                onChange={(e) => setServices(prev => ({ ...prev, [item.id]: e.target.checked }))}
-                                className="mt-1 accent-slate-400 cursor-pointer"
-                              />
-                              <div className="flex-1">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-xs font-bold text-slate-100">{item.label}</span>
-                                  <span className="text-[10px] font-bold text-slate-300">{item.price}</span>
-                                </div>
-                                <span className="text-[10px] text-muted-foreground block leading-tight mt-0.5">{item.desc}</span>
-                              </div>
-                            </label>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* SUPPORT PLAN SELECTION */}
-                    <div>
-                      <label className="text-sm font-semibold mb-2 block text-muted-foreground">3. Support Retainer Plan (Monthly Add-on)</label>
-                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                        {supportPrices.map((s) => (
-                          <button
-                            key={s.id}
-                            onClick={() => setSupport(s.id as any)}
-                            type="button"
-                            className={`rounded-xl border p-2 text-center transition cursor-pointer ${
-                              support === s.id
-                                ? "border-slate-500 bg-slate-800/40 text-slate-200"
-                                : "border-foreground/10 hover:border-foreground/20 bg-foreground/5 text-muted-foreground hover:text-foreground"
-                            }`}
-                          >
-                            <span className="text-xxs font-bold block">{s.label}</span>
-                            <span className="text-[9px] mt-0.5 block">{s.price}/mo</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* CALCULATOR OUTCOME */}
-                  <div className="glass rounded-3xl p-6 border-foreground/10 bg-slate-900/40 flex flex-col justify-between relative overflow-hidden">
-                    <div className="absolute top-0 right-0 h-24 w-24 bg-slate-800/10 blur-2xl pointer-events-none" />
-                    
-                    <div className="space-y-6">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 border-b border-foreground/5 pb-2">Estimated Investment</h4>
-                      <div className="space-y-4">
-                        <div>
-                          <span className="text-xs text-muted-foreground block">Development Timeline</span>
-                          <span className="text-lg font-bold text-slate-100">{time}</span>
-                        </div>
-                        <div>
-                          <span className="text-xs text-muted-foreground block">One-time Development Cost</span>
-                          <span className="text-3xl font-bold gradient-text">₹{totalSetup.toLocaleString("en-IN")}</span>
-                        </div>
-                        {supportMonthly > 0 && (
-                          <div>
-                            <span className="text-xs text-muted-foreground block">Monthly Retainer Cost</span>
-                            <span className="text-lg font-bold text-slate-100">₹{supportMonthly.toLocaleString("en-IN")}/month</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <Button asChild size="lg" className="w-full mt-8 font-semibold">
-                      <Link href="#contact">Schedule Consultation</Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
 
             {activeTab === "documents" && (
               <div className="space-y-6">
@@ -1414,6 +1386,10 @@ export default function DashboardPage() {
                       <Button variant="outline" className="w-full justify-start border-foreground/10 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-colors h-11" onClick={() => alert("Cache cleared successfully!")}>
                         <TrendingUp className="mr-2 h-4 w-4 text-emerald-400" />
                         Clear Application Cache
+                      </Button>
+                      <Button variant="outline" className="w-full justify-start border-foreground/10 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-colors h-11" onClick={() => setShowEditPricesModal(true)}>
+                        <Settings className="mr-2 h-4 w-4 text-emerald-400" />
+                        Edit Cost Estimator Prices
                       </Button>
                       <Button variant="outline" className="w-full justify-start border-foreground/10 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-colors h-11">
                         <a 
@@ -1715,68 +1691,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ========================================================================= */}
-      {/* AUTH LOGIN DIALOG MODAL OVERLAY */}
-      {/* ========================================================================= */}
-      <AnimatePresence>
-        {showLoginModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="glass max-w-sm w-full rounded-3xl p-6 border-foreground/10 bg-slate-900/90 shadow-2xl relative"
-            >
-              {/* Close Button */}
-              <button 
-                onClick={() => {
-                  setShowLoginModal(false);
-                  setLoginError("");
-                }}
-                className="absolute top-4 right-4 h-8 w-8 rounded-full bg-foreground/5 hover:bg-foreground/10 flex items-center justify-center border border-foreground/10 transition text-muted-foreground hover:text-slate-100 cursor-pointer"
-              >
-                <X className="h-4 w-4" />
-              </button>
 
-              <div className="flex flex-col items-center text-center mb-6">
-                <div className="h-12 w-12 rounded-2xl bg-violet-core/10 flex items-center justify-center border border-violet-core/20 mb-3 text-violet-glow">
-                  <UserCheck className="h-6 w-6" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-100">Sign In to Workspace</h3>
-                <p className="text-xs text-muted-foreground mt-1 max-w-[240px]">
-                  Provide your client or founder passcode to unlock private metrics.
-                </p>
-              </div>
-
-              {loginError && (
-                <div className="mb-4 rounded-lg bg-rose-500/10 border border-rose-500/20 p-2.5 text-center text-xs text-rose-400">
-                  {loginError}
-                </div>
-              )}
-
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Secure Passcode</label>
-                  <Input 
-                    type="password" 
-                    placeholder="Enter your secure passcode..."
-                    value={passcode}
-                    onChange={(e) => setPasscode(e.target.value)}
-                    className="h-10"
-                    autoFocus
-                  />
-                </div>
-                <Button type="submit" className="w-full h-10 font-semibold text-xs">
-                  Unlock Workspace
-                </Button>
-              </form>
-
-
-
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
       {/* UPLOAD PROJECT MODAL */}
       <AnimatePresence>
         {showUploadModal && (

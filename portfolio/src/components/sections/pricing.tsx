@@ -74,7 +74,7 @@ export function Pricing() {
               size="lg"
               className="font-bold"
             >
-              <Link href="/dashboard?tab=calculator">Interactive Cost Estimator</Link>
+              <Link href="/cost-estimator">Interactive Cost Estimator</Link>
             </Button>
           </div>
         </ScrollReveal>
