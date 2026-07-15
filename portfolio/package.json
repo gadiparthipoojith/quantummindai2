@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "build:local": "prisma generate && prisma db push && tsx prisma/seed.ts && next build",
-    "pages:build": "opennextjs-cloudflare build",
+    "pages:build": "opennextjs-cloudflare build && node -e \"const fs = require('fs'); if (fs.existsSync('.open-next/worker.js')) fs.copyFileSync('.open-next/worker.js', '.open-next/assets/_worker.js')\"",
     "start": "next start",
     "lint": "eslint"
   },
