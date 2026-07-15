@@ -1,15 +1,55 @@
 const fs = require('fs');
 const path = require('path');
 
-console.log("Cleaning up unnecessary heavy files from .open-next to reduce bundle size...");
+console.log("Cleaning up unnecessary heavy files and references from .open-next to reduce bundle size...");
 
-function deleteFileIfExists(filePath) {
-    if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-        console.log(`Deleted: ${filePath}`);
-    }
+// Helper to recursively process files in a directory
+function processDirectory(dir, fileCallback) {
+    if (!fs.existsSync(dir)) return;
+    const files = fs.readdirSync(dir);
+    files.forEach(file => {
+        const filePath = path.join(dir, file);
+        const stat = fs.lstatSync(filePath);
+        if (stat.isDirectory()) {
+            processDirectory(filePath, fileCallback);
+        } else {
+            fileCallback(filePath);
+        }
+    });
 }
 
+// 1. Rewrite handler files to remove static references to unused WASM engines (mysql, sqlite)
+console.log("Replacing unused WASM imports in JS/MJS bundles...");
+processDirectory('.open-next', (filePath) => {
+    const ext = path.extname(filePath).toLowerCase();
+    if (ext === '.js' || ext === '.mjs') {
+        let content = fs.readFileSync(filePath, 'utf8');
+        let modified = false;
+
+        // Replace mysql wasm engine imports
+        if (content.includes('query_engine_bg.mysql.wasm')) {
+            content = content.replace(/await import\("[^"]+query_engine_bg\.mysql\.wasm"\)/g, 'Promise.resolve({default: null})');
+            modified = true;
+        }
+        // Replace sqlite wasm engine imports
+        if (content.includes('query_engine_bg.sqlite.wasm')) {
+            content = content.replace(/await import\("[^"]+query_engine_bg\.sqlite\.wasm"\)/g, 'Promise.resolve({default: null})');
+            modified = true;
+        }
+        // Replace query_compiler_fast_bg.wasm imports if any
+        if (content.includes('query_compiler_fast_bg.wasm')) {
+            content = content.replace(/await import\("[^"]+query_compiler_fast_bg\.wasm"\)/g, 'Promise.resolve({default: null})');
+            modified = true;
+        }
+
+        if (modified) {
+            fs.writeFileSync(filePath, content, 'utf8');
+            console.log(`Patched references in: ${filePath}`);
+        }
+    }
+});
+
+// 2. Perform file cleanups
 function deleteFolderRecursive(folderPath) {
     if (fs.existsSync(folderPath)) {
         fs.readdirSync(folderPath).forEach((file) => {
@@ -34,36 +74,41 @@ function cleanDirectory(dir) {
         const stat = fs.lstatSync(filePath);
         
         if (stat.isDirectory()) {
-            // Exclude directories that are not needed
             if (file === 'caniuse-lite' || file === 'postcss' || file === 'eslint') {
                 deleteFolderRecursive(filePath);
             } else {
                 cleanDirectory(filePath);
             }
         } else {
-            // Delete large unused files
             const ext = path.extname(file).toLowerCase();
             const name = path.basename(file).toLowerCase();
             
+            // Delete unused database wasm binaries and node native modules
             if (
                 ext === '.node' || 
                 ext === '.map' || 
+                name === 'query_engine_bg.mysql.wasm' || 
+                name === 'query_engine_bg.sqlite.wasm' ||
+                name === 'query_compiler_fast_bg.wasm' ||
+                name === 'query_compiler_fast_bg.wasm-base64.js' ||
                 name === 'capsize-font-metrics.json' ||
                 name === 'readme.md' ||
                 name === 'license' ||
                 name.includes('tmp')
             ) {
                 fs.unlinkSync(filePath);
+                console.log(`Deleted file: ${filePath}`);
             }
         }
     });
 }
 
-// Perform cleanup on .open-next source folders before copy
+console.log("Cleaning directories...");
 cleanDirectory('.open-next/server-functions');
 cleanDirectory('.open-next/cloudflare');
 cleanDirectory('.open-next/middleware');
 
+// 3. Prepare assets by copying directories
 function copyFolderRecursiveSync(source, target) {
     if (!fs.existsSync(source)) return;
     const targetFolder = path.join(target, path.basename(source));
@@ -95,7 +140,7 @@ function copyFolderRecursiveSync(source, target) {
                             }
                         }
                     } catch (err) {
-                        // Ignore
+                        console.warn(`Warning: failed to link/copy symlink ${curSource}: ${err.message}`);
                     }
                 }
             } else if (curStat.isDirectory()) {
@@ -108,25 +153,22 @@ function copyFolderRecursiveSync(source, target) {
 }
 
 console.log("Preparing assets...");
+if (fs.existsSync('assets')) {
+    deleteFolderRecursive('assets');
+}
+fs.mkdirSync('assets', { recursive: true });
 
 if (fs.existsSync('.open-next/worker.js')) {
-    if (fs.existsSync('.open-next/assets/_worker.js')) {
-        fs.unlinkSync('.open-next/assets/_worker.js');
-    }
-    fs.copyFileSync('.open-next/worker.js', '.open-next/assets/_worker.js');
+    fs.copyFileSync('.open-next/worker.js', 'assets/_worker.js');
     console.log("Copied worker.js to assets/_worker.js");
-} else {
-    console.log("WARNING: .open-next/worker.js not found!");
 }
 
-const folders = ['cloudflare', 'middleware', '.build', 'server-functions'];
-folders.forEach(f => {
-    const src = path.join('.open-next', f);
+const foldersToCopy = ['cloudflare', 'middleware', '.build', 'server-functions'];
+foldersToCopy.forEach(folder => {
+    const src = path.join('.open-next', folder);
     if (fs.existsSync(src)) {
-        copyFolderRecursiveSync(src, '.open-next/assets');
-        console.log(`Copied ${f} folder recursively to assets/${f}`);
-    } else {
-        console.log(`Folder not found: ${src}`);
+        copyFolderRecursiveSync(src, 'assets');
+        console.log(`Copied ${folder} folder recursively to assets/${folder}`);
     }
 });
 
