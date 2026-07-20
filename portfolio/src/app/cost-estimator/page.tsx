@@ -2,15 +2,23 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Calculator, Sparkles, ArrowLeft, Settings, Check } from "lucide-react";
+import { Calculator, Sparkles, ArrowLeft, Settings, Check, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { GradientMesh } from "@/components/effects/gradient-mesh";
+import {
+  CURRENCIES,
+  FALLBACK_RATES,
+  fetchExchangeRates,
+  detectUserCurrency,
+  formatCurrencyValue,
+} from "@/lib/currency";
 
 export default function CostEstimatorPage() {
-  const [currency, setCurrency] = useState<"INR" | "USD">("INR");
+  const [currency, setCurrency] = useState<string>("INR");
+  const [rates, setRates] = useState<Record<string, number>>(FALLBACK_RATES);
   const [tier, setTier] = useState<"starter" | "professional" | "enterprise">("professional");
   const [services, setServices] = useState<Record<string, boolean>>({
     chatbot: false,
@@ -57,15 +65,28 @@ export default function CostEstimatorPage() {
 
   useEffect(() => {
     fetchPricing();
+    fetchExchangeRates().then(setRates);
+
+    const stored = localStorage.getItem("selected_currency");
+    if (stored) {
+      setCurrency(stored);
+    } else {
+      detectUserCurrency().then((detected) => {
+        setCurrency(detected);
+        localStorage.setItem("selected_currency", detected);
+      });
+    }
+
+    const handleCurrencySync = () => {
+      const updated = localStorage.getItem("selected_currency");
+      if (updated) setCurrency(updated);
+    };
+    window.addEventListener("currency_changed", handleCurrencySync);
+    return () => window.removeEventListener("currency_changed", handleCurrencySync);
   }, []);
 
   const formatVal = (val: number) => {
-    if (currency === "INR") {
-      return `₹${val.toLocaleString("en-IN")}`;
-    } else {
-      const usdVal = Math.round(val / 83);
-      return `$${usdVal.toLocaleString("en-US")}`;
-    }
+    return formatCurrencyValue(val, currency, rates);
   };
 
   const calculateEstimate = () => {
@@ -137,29 +158,24 @@ export default function CostEstimatorPage() {
               </div>
               <div className="flex items-center gap-3">
                 {/* Currency Switcher */}
-                <div className="glass p-0.5 rounded-full border border-foreground/10 flex items-center shadow-md">
-                  <button
-                    onClick={() => setCurrency("INR")}
-                    type="button"
-                    className={`rounded-full px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-all duration-300 ${
-                      currency === "INR"
-                        ? "bg-gradient-to-r from-violet-core to-cyan-pulse text-white shadow-sm"
-                        : "text-muted-foreground hover:text-foreground bg-transparent"
-                    }`}
+                <div className="flex items-center gap-2 bg-slate-900/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-foreground/10 shadow-md">
+                  <Globe className="h-3.5 w-3.5 text-violet-glow animate-pulse shrink-0" />
+                  <select
+                    value={currency}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setCurrency(val);
+                      localStorage.setItem("selected_currency", val);
+                      window.dispatchEvent(new Event("currency_changed"));
+                    }}
+                    className="bg-transparent text-slate-100 text-xxs font-bold uppercase tracking-wider cursor-pointer outline-none border-none pr-1 focus:ring-0"
                   >
-                    INR (₹)
-                  </button>
-                  <button
-                    onClick={() => setCurrency("USD")}
-                    type="button"
-                    className={`rounded-full px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-all duration-300 ${
-                      currency === "USD"
-                        ? "bg-gradient-to-r from-violet-core to-cyan-pulse text-white shadow-sm"
-                        : "text-muted-foreground hover:text-foreground bg-transparent"
-                    }`}
-                  >
-                    USD ($)
-                  </button>
+                    {CURRENCIES.map((c) => (
+                      <option key={c.code} value={c.code} className="bg-slate-950 text-slate-100">
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <Button asChild variant="outline" className="border-foreground/10 hover:bg-foreground/5 h-10">
