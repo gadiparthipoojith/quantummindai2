@@ -26,19 +26,7 @@ export function Navbar() {
   const [hasProjects, setHasProjects] = useState(false);
   const [showLogoModal, setShowLogoModal] = useState(false);
 
-  const handleLogoClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (clickTimeoutRef.current) {
-      clearTimeout(clickTimeoutRef.current);
-      clickTimeoutRef.current = null;
-      setShowLogoModal(true);
-    } else {
-      clickTimeoutRef.current = setTimeout(() => {
-        router.push("/");
-        clickTimeoutRef.current = null;
-      }, 300);
-    }
-  };
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -77,12 +65,14 @@ export function Navbar() {
       )}
     >
       <nav className="container mx-auto flex items-center justify-between px-4 md:px-6 relative">
-        <a href="/" onClick={handleLogoClick} className="flex items-center gap-2 group cursor-pointer">
-          <Logo />
-          <span className="hidden font-semibold tracking-tight sm:block">
+        <div className="flex items-center gap-2 group">
+          <div onClick={() => setShowLogoModal(true)} className="cursor-pointer">
+            <Logo />
+          </div>
+          <Link href="/" className="hidden font-semibold tracking-tight sm:block cursor-pointer">
             Quantum Mind <span className="text-violet-core">AI Innovations</span>
-          </span>
-        </a>
+          </Link>
+        </div>
 
         <div className="hidden items-center gap-1 lg:flex absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
           {navLinks.map((link) => (

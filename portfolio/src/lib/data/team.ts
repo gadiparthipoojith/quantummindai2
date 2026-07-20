@@ -13,7 +13,7 @@ export const team = [
     name: "Surya Antarvedi",
     role: "Data Scientist & Analytics Engineer",
     bio: "Transforms complex datasets into actionable business intelligence through predictive modeling, robust data pipelines, and interactive analytics.",
-    skills: ["Python", "Machine Learning", "SQL", "TensorFlow", "Pandas", "PostgreSQL", "Dashboards"],
+    skills: ["Python", "Machine Learning", "SQL", "TensorFlow", "Pandas", "PyTorch", "Dashboards"],
     image: "/team/surya.jpg",
 
   },
@@ -22,18 +22,18 @@ export const team = [
     name: "Nalla S.K.Thrinadh",
     role: "Full Stack Developer & App Developer",
     bio: "Crafts seamless cross-platform experiences, blending high-performance web architecture with beautifully fluid mobile interfaces.",
-    skills: ["Next.js", "React Native", "TypeScript", "Node.js", "MongoDB", "Express", "Tailwind CSS"],
+    skills: ["Next.js", "React Native", "TypeScript", "Node.js", "Firebase", "Express", "Tailwind CSS"],
     image: "/team/thrinadh.jpg",
 
   },
 ] as const;
 
 export const studio = {
-  name: "Quantum Mind AI",
+  name: "Quantum Mind AI Innovations",
   tagline: "We Engineer Intelligence.",
   description:
     "A boutique software engineering studio dedicated to crafting elegant AI systems, robust platforms, and beautiful digital experiences for ambitious businesses.",
-  email: "info@qmaiinovations.in",
+  email: "info@qmai.in",
   location: "Remote · Worldwide",
   founded: "2026",
 } as const;

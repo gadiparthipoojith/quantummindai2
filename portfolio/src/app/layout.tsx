@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Quantum Mind AI | AI Engineering & Full Stack Studio",
   description: "Quantum Mind AI designs, builds, and deploys production-grade AI applications, autonomous agents, and full-stack software for startups and enterprises.",
+  icons: {
+    icon: "/icon.svg",
+  }
 };
 
 export default function RootLayout({

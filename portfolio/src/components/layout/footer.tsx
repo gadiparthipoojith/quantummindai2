@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Github, Linkedin, Mail, Twitter } from "lucide-react";
+import { Linkedin, Mail, Twitter } from "lucide-react";
 import { studio } from "@/lib/data/team";
 
 export function Footer() {
@@ -17,16 +17,7 @@ export function Footer() {
             <p className="text-muted-foreground max-w-md mb-6">{studio.description}</p>
             <div className="flex gap-3">
               <a
-                href="https://github.com/quantummind-ai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex h-10 w-10 items-center justify-center rounded-lg border border-foreground/10 transition-colors hover:border-violet-core/50 hover:bg-violet-core/10"
-                aria-label="GitHub"
-              >
-                <Github className="h-4 w-4" />
-              </a>
-              <a
-                href="https://linkedin.com/company/quantummind-ai"
+                href="https://www.linkedin.com/company/quantum-mind-ai-innovations/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex h-10 w-10 items-center justify-center rounded-lg border border-foreground/10 transition-colors hover:border-violet-core/50 hover:bg-violet-core/10"
@@ -35,7 +26,7 @@ export function Footer() {
                 <Linkedin className="h-4 w-4" />
               </a>
               <a
-                href="https://twitter.com/quantummind_ai"
+                href="https://x.com/qmaiinovations"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex h-10 w-10 items-center justify-center rounded-lg border border-foreground/10 transition-colors hover:border-violet-core/50 hover:bg-violet-core/10"

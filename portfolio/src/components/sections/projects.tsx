@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ExternalLink, Github } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { ScrollReveal } from "@/components/effects/scroll-reveal";
 import { projects } from "@/lib/data/projects";
 
@@ -35,15 +35,6 @@ export function Projects() {
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-obsidian/80 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                   <div className="absolute bottom-4 left-4 right-4 flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex h-9 w-9 items-center justify-center rounded-lg bg-foreground/10 backdrop-blur-sm transition-colors hover:bg-violet-core/50"
-                      aria-label="View on GitHub"
-                    >
-                      <Github className="h-4 w-4" />
-                    </a>
                     <Link
                       href={project.href}
                       className="flex h-9 w-9 items-center justify-center rounded-lg bg-foreground/10 backdrop-blur-sm transition-colors hover:bg-violet-core/50"

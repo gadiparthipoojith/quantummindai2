@@ -5,7 +5,12 @@ import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { studio } from "@/lib/data/team";
-import { HeroScene } from "@/components/effects/hero-scene";
+import dynamic from "next/dynamic";
+
+const HeroScene = dynamic(
+  () => import("@/components/effects/hero-scene").then((mod) => mod.HeroScene),
+  { ssr: false }
+);
 
 export function Hero() {
   return (

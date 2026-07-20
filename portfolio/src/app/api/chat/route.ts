@@ -13,7 +13,7 @@ Key Information:
   1. Gadiparthi Poojith: Core developer building intelligent agents, scalable backend systems, APIs, and beautiful web interfaces. Specialist in LangChain, Next.js, FastAPI, Node.js, Supabase, AWS.
   2. Surya Antarvedi: Data scientist building ML models, predictive algorithms, ETL pipelines, and high-performance business intelligence dashboards.
   3. Nalla S.K.Thrinadh: Full Stack Developer & App Developer crafting seamless cross-platform experiences.
-- Contact: Email info@qmaiinovations.in, or fill out the contact form on the home page.
+- Contact: Email info@qmai.in, or fill out the contact form on the home page.
 - Pricing: Project-based pricing starts from ₹20,000. Custom agency retainer contracts are available.
 
 Adopt a tone that is confident, highly professional, and distinctly human. Act as an expert engineering consultant rather than a generic customer service bot. Keep answers concise, insightful, and sharply focused on business value and technical excellence.`;
@@ -65,7 +65,7 @@ function getMockResponse(query: string): string {
     return "Our custom AI and SaaS project development starts at ₹20,000. We also offer retainer agreements for ongoing support. What specific project do you have in mind? I can provide an estimate.";
   }
   if (q.includes("contact") || q.includes("email") || q.includes("hire")) {
-    return "You can contact us directly at info@qmaiinovations.in or use the contact form at the bottom of our homepage. We usually respond within 24 hours.";
+    return "You can contact us directly at info@qmai.in or use the contact form at the bottom of our homepage. We usually respond within 24 hours.";
   }
   if (q.includes("service") || q.includes("what do you do") || q.includes("agent")) {
     return "We specialize in designing and deploying Autonomous AI Agents (using LangGraph/CrewAI), custom RAG systems, business automation workflows (n8n/Zapier), and premium full-stack SaaS apps with Next.js and Supabase.";

@@ -74,6 +74,8 @@ export default function DashboardPage() {
   const [loginError, setLoginError] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loginType, setLoginType] = useState<"client" | "admin">("client");
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [signUpName, setSignUpName] = useState("");
 
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [isLoadingProjects, setIsLoadingProjects] = useState(false);
@@ -91,6 +93,34 @@ export default function DashboardPage() {
     }
     if (tab === "overview" || tab === "documents" || tab === "devtools" || tab === "projects" || tab === "access") {
       setActiveTab(tab as any);
+    }
+  }, []);
+
+  // Restore session from localStorage
+  useEffect(() => {
+    try {
+      const sessionStr = localStorage.getItem("qmai_session");
+      if (sessionStr) {
+        const session = JSON.parse(sessionStr);
+        // Persist login for 24 hours
+        if (session && session.expires > Date.now()) {
+          setRole(session.role);
+          setUserId(session.userId);
+          setSignedInName(session.name);
+          fetchProjects(session.userId);
+          if (session.role === "admin") {
+            // fetchClients is not available yet, but we will call it after initialization
+            // Instead of directly calling fetchClients here, we can set the role and userId
+            // The components will render and we'll let another effect or manual trigger fetch clients if needed
+            // Actually fetchClients is hoisted in behavior but it's an arrow function. We can just set the role 
+            // and the UI will show the admin panel. 
+          }
+        } else {
+          localStorage.removeItem("qmai_session");
+        }
+      }
+    } catch (e) {
+      console.error("Failed to restore session", e);
     }
   }, []);
 
@@ -345,6 +375,18 @@ export default function DashboardPage() {
         setShowLoginModal(false);
         setPasscode("");
         
+        // Save session to localStorage, valid for 24 hours
+        try {
+          localStorage.setItem("qmai_session", JSON.stringify({
+            role: data.user.role,
+            userId: data.user.id,
+            name: displayName,
+            expires: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
+          }));
+        } catch (e) {
+          console.error("Failed to save session", e);
+        }
+
         fetchProjects(data.user.id);
         if (data.user.role === "admin") {
           fetchClients();
@@ -354,6 +396,54 @@ export default function DashboardPage() {
       }
     } catch (err) {
       setLoginError("Failed to authenticate. Please try again.");
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const key = passcode.trim();
+    const name = signUpName.trim();
+    if (!key || !name) return;
+
+    setIsLoggingIn(true);
+    setLoginError("");
+
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, passcode: key }),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        setRole(data.user.role);
+        setUserId(data.user.id);
+        const displayName = `Client: ${data.user.name}`;
+        setSignedInName(displayName);
+        setShowLoginModal(false);
+        setPasscode("");
+        setSignUpName("");
+        
+        try {
+          localStorage.setItem("qmai_session", JSON.stringify({
+            role: data.user.role,
+            userId: data.user.id,
+            name: displayName,
+            expires: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
+          }));
+        } catch (e) {
+          console.error("Failed to save session", e);
+        }
+
+        fetchProjects(data.user.id);
+      } else {
+        setLoginError(data.error || "Failed to sign up.");
+      }
+    } catch (err) {
+      setLoginError("Failed to sign up. Please try again.");
     } finally {
       setIsLoggingIn(false);
     }
@@ -463,6 +553,11 @@ export default function DashboardPage() {
     setSignedInName("");
     setProjects([]);
     setActiveTab("overview");
+    try {
+      localStorage.removeItem("qmai_session");
+    } catch (e) {
+      console.error("Failed to remove session", e);
+    }
   };
 
   // Pricing Estimator math
@@ -588,61 +683,177 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          {/* Login Type Tabs */}
-          <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-foreground/5 border border-foreground/5 mb-5">
+          {/* Main Auth Toggle Tabs (Login vs Sign Up) */}
+          <div className="flex p-1 rounded-xl bg-foreground/5 border border-foreground/5 mb-4 relative z-10">
             <button
               onClick={() => {
-                setLoginType("client");
+                setIsSignUp(false);
                 setLoginError("");
               }}
               type="button"
-              className={`py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${
-                loginType === "client"
-                  ? "bg-violet-core text-white"
+              className={`relative flex-1 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer outline-none ${
+                !isSignUp
+                  ? "text-white"
                   : "text-muted-foreground hover:text-slate-100"
               }`}
             >
-              Clients Login
+              Sign In
+              {!isSignUp && (
+                <motion.div 
+                  layoutId="mainAuthTab" 
+                  className="absolute inset-0 bg-violet-core rounded-lg -z-10" 
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
             </button>
             <button
               onClick={() => {
-                setLoginType("admin");
+                setIsSignUp(true);
+                setLoginType("client"); // Admin signup is not allowed
                 setLoginError("");
               }}
               type="button"
-              className={`py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${
-                loginType === "admin"
-                  ? "bg-violet-core text-white"
+              className={`relative flex-1 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer outline-none ${
+                isSignUp
+                  ? "text-white"
                   : "text-muted-foreground hover:text-slate-100"
               }`}
             >
-              Admin Login
+              Sign Up
+              {isSignUp && (
+                <motion.div 
+                  layoutId="mainAuthTab" 
+                  className="absolute inset-0 bg-violet-core rounded-lg -z-10" 
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
             </button>
           </div>
 
-          {loginError && (
-            <div className="mb-4 rounded-lg bg-rose-500/10 border border-rose-500/20 p-2.5 text-center text-xs text-rose-400">
-              {loginError}
-            </div>
-          )}
+          {/* Login Type Tabs (Only show for Sign In) */}
+          <AnimatePresence>
+            {!isSignUp && (
+              <motion.div
+                initial={{ height: 0, opacity: 0, marginBottom: 0 }}
+                animate={{ height: "auto", opacity: 1, marginBottom: 20 }}
+                exit={{ height: 0, opacity: 0, marginBottom: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="overflow-hidden"
+              >
+                <div className="flex p-1 rounded-xl bg-foreground/5 border border-foreground/5 relative z-10">
+                  <button
+                    onClick={() => {
+                      setLoginType("client");
+                      setLoginError("");
+                    }}
+                    type="button"
+                    className={`relative flex-1 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer outline-none ${
+                      loginType === "client"
+                        ? "text-white"
+                        : "text-muted-foreground hover:text-slate-100"
+                    }`}
+                  >
+                    Clients Login
+                    {loginType === "client" && (
+                      <motion.div 
+                        layoutId="loginTypeTab" 
+                        className="absolute inset-0 bg-slate-800 rounded-lg -z-10" 
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setLoginType("admin");
+                      setLoginError("");
+                    }}
+                    type="button"
+                    className={`relative flex-1 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer outline-none ${
+                      loginType === "admin"
+                        ? "text-white"
+                        : "text-muted-foreground hover:text-slate-100"
+                    }`}
+                  >
+                    Admin Login
+                    {loginType === "admin" && (
+                      <motion.div 
+                        layoutId="loginTypeTab" 
+                        className="absolute inset-0 bg-slate-800 rounded-lg -z-10" 
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-1">
+          <AnimatePresence>
+            {loginError && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10, height: 0 }}
+                animate={{ opacity: 1, y: 0, height: "auto" }}
+                exit={{ opacity: 0, y: -10, height: 0 }}
+                className="mb-4 overflow-hidden"
+              >
+                <div className="rounded-lg bg-rose-500/10 border border-rose-500/20 p-2.5 text-center text-xs text-rose-400">
+                  {loginError}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <form onSubmit={isSignUp ? handleSignUp : handleLogin} className="space-y-4">
+            <AnimatePresence mode="popLayout">
+              {isSignUp && (
+                <motion.div 
+                  initial={{ opacity: 0, height: 0, y: -20 }}
+                  animate={{ opacity: 1, height: "auto", y: 0 }}
+                  exit={{ opacity: 0, height: 0, y: -20 }}
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
+                  className="space-y-1 overflow-hidden"
+                >
+                  <label className="text-[9px] font-bold uppercase tracking-wider text-slate-300">
+                    Full Name / Company Name
+                  </label>
+                  <Input 
+                    type="text" 
+                    placeholder="Enter your name..."
+                    value={signUpName}
+                    onChange={(e) => setSignUpName(e.target.value)}
+                    className="h-10 border-foreground/10 bg-black/20 focus-visible:ring-violet-core text-foreground transition-all duration-300 focus:bg-black/40"
+                    autoFocus={isSignUp}
+                    required
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+            
+            <motion.div layout transition={{ type: "spring", bounce: 0.2, duration: 0.5 }} className="space-y-1">
               <label className="text-[9px] font-bold uppercase tracking-wider text-slate-300">
-                {loginType === "admin" ? "Founder Security Passcode" : "Secure Partner Passcode"}
+                {isSignUp ? "Choose a Passcode" : loginType === "admin" ? "Founder Security Passcode" : "Secure Partner Passcode"}
               </label>
               <Input 
                 type="password" 
-                placeholder={loginType === "admin" ? "Enter admin passcode..." : "Enter client passcode..."}
+                placeholder={isSignUp ? "Create a secret passcode..." : loginType === "admin" ? "Enter admin passcode..." : "Enter client passcode..."}
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
-                className="h-10 border-foreground/10 bg-black/20 focus-visible:ring-violet-core text-foreground"
-                autoFocus
+                className="h-10 border-foreground/10 bg-black/20 focus-visible:ring-violet-core text-foreground transition-all duration-300 focus:bg-black/40"
+                autoFocus={!isSignUp}
+                required
               />
-            </div>
-            <Button type="submit" className="w-full h-10 font-bold text-xs bg-violet-core hover:bg-violet-glow text-white transition-all">
-              {isLoggingIn ? "Authenticating..." : loginType === "admin" ? "Unlock Admin Console" : "Unlock Client Portal"}
-            </Button>
+            </motion.div>
+            
+            <motion.div layout transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}>
+              <Button type="submit" className="w-full h-10 font-bold text-xs bg-violet-core hover:bg-violet-glow text-white transition-all relative overflow-hidden group">
+                <span className="relative z-10 flex items-center justify-center gap-2">
+                  {isLoggingIn 
+                    ? (isSignUp ? "Creating Account..." : "Authenticating...") 
+                    : (isSignUp ? "Create Account & Unlock Portal" : (loginType === "admin" ? "Unlock Admin Console" : "Unlock Client Portal"))}
+                </span>
+                <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-[0%] transition-transform duration-300 ease-out" />
+              </Button>
+            </motion.div>
           </form>
         </motion.div>
       </div>

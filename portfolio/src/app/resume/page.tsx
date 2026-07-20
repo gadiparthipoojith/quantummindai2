@@ -73,16 +73,11 @@ export default function ResumePage() {
                 <div className="flex flex-col gap-2 text-sm text-muted-foreground print:text-zinc-700">
                   <span className="flex items-center gap-2">
                     <Mail className="h-4 w-4 text-violet-core print:text-indigo-600" />
-                    info@qmaiinovations.in
+                    info@qmai.in
                   </span>
                   <span className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-violet-core print:text-indigo-600" />
                     Hyderabad, India
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <Link href="https://github.com/gadiparthipoojith" target="_blank" className="hover:text-violet-core">
-                      github.com/gadiparthipoojith
-                    </Link>
                   </span>
                 </div>
               </div>

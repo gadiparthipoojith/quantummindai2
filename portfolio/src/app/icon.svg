@@ -1,0 +1,70 @@
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="highres-bg-glow" cx="50" cy="50" r="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0ea5e9" stop-opacity="0.25" />
+      <stop offset="0.6" stop-color="#6366f1" stop-opacity="0.1" />
+      <stop offset="1" stop-color="transparent" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="highres-orbit-1" x1="10" y1="50" x2="90" y2="50" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0ea5e9" />
+      <stop offset="0.5" stop-color="#8b5cf6" />
+      <stop offset="1" stop-color="#00f5d4" />
+    </linearGradient>
+    <linearGradient id="highres-q-grad" x1="14" y1="14" x2="86" y2="86" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38bdf8" />
+      <stop offset="0.4" stop-color="#0ea5e9" />
+      <stop offset="0.75" stop-color="#6366f1" />
+      <stop offset="1" stop-color="#00f5d4" />
+    </linearGradient>
+    <linearGradient id="highres-line-grad" x1="30" y1="30" x2="70" y2="70" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38bdf8" stop-opacity="0.8" />
+      <stop offset="1" stop-color="#00f5d4" stop-opacity="0.8" />
+    </linearGradient>
+    <radialGradient id="highres-core-glow" cx="50" cy="50" r="14" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00f5d4" stop-opacity="0.8" />
+      <stop offset="0.5" stop-color="#0ea5e9" stop-opacity="0.3" />
+      <stop offset="1" stop-color="transparent" stop-opacity="0" />
+    </radialGradient>
+    
+    <filter id="shadow-blue" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#0ea5e9"/>
+    </filter>
+    <filter id="shadow-indigo" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#6366f1"/>
+    </filter>
+    <filter id="shadow-cyan" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#38bdf8"/>
+    </filter>
+    <filter id="shadow-core" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#00f5d4"/>
+    </filter>
+  </defs>
+
+  <circle cx="50" cy="50" r="48" fill="url(#highres-bg-glow)" />
+  
+  <g opacity="0.3" stroke="#38bdf8" stroke-width="0.75">
+    <line x1="50" y1="2" x2="50" y2="6" />
+    <line x1="50" y1="94" x2="50" y2="98" />
+    <line x1="2" y1="50" x2="6" y2="50" />
+    <line x1="94" y1="50" x2="98" y2="50" />
+  </g>
+  
+  <circle cx="50" cy="50" r="44" stroke="url(#highres-orbit-1)" stroke-width="1.25" stroke-dasharray="3 6" opacity="0.45" />
+  
+  <circle cx="50" cy="50" r="38" stroke="url(#highres-orbit-1)" stroke-width="1" stroke-dasharray="12 4 4 4" opacity="0.6" />
+  
+  <path d="M50 14 C 30.12 14, 14 30.12, 14 50 C 14 69.88, 30.12 86, 50 86 C 62.45 86, 73.34 79.67, 79.62 70.08 L 91.5 82 M 72 62 L 85.5 75.5" stroke="url(#highres-q-grad)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.95" />
+  
+  <g opacity="0.75">
+    <line x1="50" y1="50" x2="32" y2="32" stroke="url(#highres-line-grad)" stroke-width="1.25" />
+    <line x1="50" y1="50" x2="68" y2="32" stroke="url(#highres-line-grad)" stroke-width="1.25" />
+    <line x1="50" y1="50" x2="50" y2="72" stroke="url(#highres-line-grad)" stroke-width="1.25" />
+  </g>
+  
+  <circle cx="32" cy="32" r="3.5" fill="#0ea5e9" filter="url(#shadow-blue)" />
+  <circle cx="68" cy="32" r="3.5" fill="#6366f1" filter="url(#shadow-indigo)" />
+  <circle cx="50" cy="72" r="3.5" fill="#38bdf8" filter="url(#shadow-cyan)" />
+  
+  <circle cx="50" cy="50" r="14" fill="url(#highres-core-glow)" />
+  <circle cx="50" cy="50" r="5" fill="#00f5d4" filter="url(#shadow-core)" />
+</svg>
