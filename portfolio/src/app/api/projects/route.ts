@@ -18,6 +18,9 @@ export async function GET(req: Request) {
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
+      include: {
+        projects: true
+      }
     });
 
     if (!user) {
@@ -29,13 +32,11 @@ export async function GET(req: Request) {
 
     let projects = [];
 
-    // Admins see all projects, clients see their own
+    // Admins see all projects, clients see their own (loaded via include relation)
     if (user.role === "admin") {
       projects = await prisma.project.findMany();
     } else {
-      projects = await prisma.project.findMany({
-        where: { clientId: user.id },
-      });
+      projects = user.projects;
     }
 
     return NextResponse.json({ success: true, projects });

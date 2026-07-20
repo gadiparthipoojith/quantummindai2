@@ -26,11 +26,14 @@ export async function POST(req: Request) {
       );
     }
 
-    await prisma.loginLog.create({
+    // Fire-and-forget: create login log asynchronously so it doesn't block the HTTP response
+    prisma.loginLog.create({
       data: {
         userId: user.id,
         userName: user.name,
       }
+    }).catch((err) => {
+      console.error("Error creating login log asynchronously:", err);
     });
 
     return NextResponse.json({
