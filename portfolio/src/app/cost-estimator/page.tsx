@@ -166,6 +166,7 @@ export default function CostEstimatorPage() {
                     window.dispatchEvent(new Event("currency_changed"));
                   }}
                   align="right"
+                  size="sm"
                 />
 
                 <Button asChild variant="outline" className="border-foreground/10 hover:bg-foreground/5 h-10">

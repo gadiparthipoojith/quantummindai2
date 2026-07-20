@@ -11,6 +11,7 @@ interface CurrencySelectorProps {
   onChange: (val: string) => void;
   className?: string;
   align?: "left" | "right" | "center";
+  size?: "sm" | "md" | "lg";
 }
 
 export function CurrencySelector({
@@ -18,6 +19,7 @@ export function CurrencySelector({
   onChange,
   className,
   align = "center",
+  size = "md",
 }: CurrencySelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -49,22 +51,44 @@ export function CurrencySelector({
       c.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const buttonSizeClasses = {
+    sm: "px-3.5 py-1.5 text-[10px] gap-1.5 h-8",
+    md: "px-4 py-2 text-xs gap-2 h-10",
+    lg: "px-5 py-2.5 text-sm gap-2.5 h-12",
+  }[size];
+
+  const iconSizeClasses = {
+    sm: "h-3.5 w-3.5",
+    md: "h-4 w-4",
+    lg: "h-4.5 w-4.5",
+  }[size];
+
+  const chevronSizeClasses = {
+    sm: "h-3 w-3",
+    md: "h-3.5 w-3.5",
+    lg: "h-4 w-4",
+  }[size];
+
   return (
     <div className={cn("relative inline-block text-left z-40", className)} ref={dropdownRef}>
       {/* Active Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         type="button"
-        className="flex items-center gap-2 bg-slate-900/60 backdrop-blur-md px-4 py-2 rounded-full border border-foreground/10 hover:border-violet-core/40 shadow-lg text-slate-100 text-xs font-bold uppercase tracking-wider transition-all duration-300 active:scale-95 cursor-pointer outline-none"
+        className={cn(
+          "flex items-center bg-slate-900/60 backdrop-blur-md rounded-full border border-foreground/10 hover:border-violet-core/40 shadow-lg text-slate-100 font-bold uppercase tracking-wider transition-all duration-300 active:scale-95 cursor-pointer outline-none",
+          buttonSizeClasses
+        )}
       >
-        <Globe className="h-4 w-4 text-violet-glow animate-pulse shrink-0" />
-        <span className="text-muted-foreground mr-1">Currency:</span>
+        <Globe className={cn("text-violet-glow animate-pulse shrink-0", iconSizeClasses)} />
+        <span className="text-muted-foreground mr-0.5">Currency:</span>
         <span className="text-slate-100 flex items-center gap-1.5">
           {activeCurrency.name}
         </span>
         <ChevronDown
           className={cn(
-            "h-3.5 w-3.5 text-muted-foreground transition-transform duration-300 shrink-0",
+            "text-muted-foreground transition-transform duration-300 shrink-0",
+            chevronSizeClasses,
             isOpen && "rotate-180 text-violet-glow"
           )}
         />
