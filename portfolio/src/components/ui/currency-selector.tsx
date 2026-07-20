@@ -81,9 +81,9 @@ export function CurrencySelector({
         )}
       >
         <Globe className={cn("text-violet-glow animate-pulse shrink-0", iconSizeClasses)} />
-        <span className="text-muted-foreground mr-0.5">Currency:</span>
+        {size !== "sm" && <span className="text-muted-foreground mr-0.5">Currency:</span>}
         <span className="text-slate-100 flex items-center gap-1.5">
-          {activeCurrency.name}
+          {size === "sm" ? `${activeCurrency.name.split(" ")[0]} ${activeCurrency.code}` : activeCurrency.name}
         </span>
         <ChevronDown
           className={cn(
