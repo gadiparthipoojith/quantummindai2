@@ -10,6 +10,7 @@ import { Footer } from "@/components/layout/footer";
 import { GradientMesh } from "@/components/effects/gradient-mesh";
 
 export default function CostEstimatorPage() {
+  const [currency, setCurrency] = useState<"INR" | "USD">("INR");
   const [tier, setTier] = useState<"starter" | "professional" | "enterprise">("professional");
   const [services, setServices] = useState<Record<string, boolean>>({
     chatbot: false,
@@ -57,6 +58,15 @@ export default function CostEstimatorPage() {
   useEffect(() => {
     fetchPricing();
   }, []);
+
+  const formatVal = (val: number) => {
+    if (currency === "INR") {
+      return `₹${val.toLocaleString("en-IN")}`;
+    } else {
+      const usdVal = Math.round(val / 83);
+      return `$${usdVal.toLocaleString("en-US")}`;
+    }
+  };
 
   const calculateEstimate = () => {
     const activeTier = tierPrices.find(t => t.id === tier);
@@ -125,7 +135,33 @@ export default function CostEstimatorPage() {
                   Tailor project development tiers, target modules, and support packages to instantly calculate customized timeline and budget guidelines.
                 </p>
               </div>
-              <div>
+              <div className="flex items-center gap-3">
+                {/* Currency Switcher */}
+                <div className="glass p-0.5 rounded-full border border-foreground/10 flex items-center shadow-md">
+                  <button
+                    onClick={() => setCurrency("INR")}
+                    type="button"
+                    className={`rounded-full px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-all duration-300 ${
+                      currency === "INR"
+                        ? "bg-gradient-to-r from-violet-core to-cyan-pulse text-white shadow-sm"
+                        : "text-muted-foreground hover:text-foreground bg-transparent"
+                    }`}
+                  >
+                    INR (₹)
+                  </button>
+                  <button
+                    onClick={() => setCurrency("USD")}
+                    type="button"
+                    className={`rounded-full px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition-all duration-300 ${
+                      currency === "USD"
+                        ? "bg-gradient-to-r from-violet-core to-cyan-pulse text-white shadow-sm"
+                        : "text-muted-foreground hover:text-foreground bg-transparent"
+                    }`}
+                  >
+                    USD ($)
+                  </button>
+                </div>
+
                 <Button asChild variant="outline" className="border-foreground/10 hover:bg-foreground/5 h-10">
                   <Link href="/">
                     <ArrowLeft className="mr-2 h-4 w-4" />
@@ -162,7 +198,7 @@ export default function CostEstimatorPage() {
                             <span className="text-xs font-bold block">{c.label}</span>
                             <span className="text-[10px] text-muted-foreground line-clamp-2 mt-1 leading-tight">{c.desc}</span>
                           </div>
-                          <span className="text-xs font-bold text-violet-glow mt-3 block">{c.price}</span>
+                          <span className="text-xs font-bold text-violet-glow mt-3 block">Base: {formatVal(c.value)}</span>
                         </button>
                       ))}
                     </div>
@@ -194,7 +230,7 @@ export default function CostEstimatorPage() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between gap-2">
                                 <span className="text-xs font-bold text-slate-100 truncate">{item.label}</span>
-                                <span className="text-[10px] font-bold text-violet-glow shrink-0">{item.price}</span>
+                                <span className="text-[10px] font-bold text-violet-glow shrink-0">{formatVal(item.value)}</span>
                               </div>
                               <span className="text-[10px] text-muted-foreground block leading-tight mt-1">{item.desc}</span>
                             </div>
@@ -222,7 +258,9 @@ export default function CostEstimatorPage() {
                           }`}
                         >
                           <span className="text-xxs font-bold block">{s.label}</span>
-                          <span className="text-[10px] text-violet-glow font-semibold mt-1 block">{s.price}/mo</span>
+                          <span className="text-[10px] text-violet-glow font-semibold mt-1 block">
+                            {formatVal(s.value)}{s.id !== "none" ? "/mo" : ""}
+                          </span>
                         </button>
                       ))}
                     </div>
@@ -247,14 +285,14 @@ export default function CostEstimatorPage() {
 
                       <div className="p-4 rounded-xl bg-violet-core/10 border border-violet-core/20">
                         <span className="text-[10px] uppercase font-bold text-muted-foreground block">One-time Setup Budget</span>
-                        <span className="text-3xl font-extrabold text-white block mt-1 tracking-tight">₹{totalSetup.toLocaleString("en-IN")}</span>
+                        <span className="text-3xl font-extrabold text-white block mt-1 tracking-tight">{formatVal(totalSetup)}</span>
                         <span className="text-[9px] text-muted-foreground mt-1 block leading-tight">*Calculated base plus selected modules</span>
                       </div>
 
                       {supportMonthly > 0 && (
                         <div className="p-3.5 rounded-lg bg-cyan-pulse/5 border border-cyan-pulse/15">
                           <span className="text-[10px] uppercase font-bold text-muted-foreground block">Ongoing Support Retainer</span>
-                          <span className="text-lg font-bold text-cyan-pulse mt-0.5 block">₹{supportMonthly.toLocaleString("en-IN")} / month</span>
+                          <span className="text-lg font-bold text-cyan-pulse mt-0.5 block">{formatVal(supportMonthly)} / month</span>
                         </div>
                       )}
                     </div>

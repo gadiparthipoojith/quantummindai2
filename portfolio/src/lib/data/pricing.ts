@@ -2,7 +2,10 @@ export const pricingPlans = [
   {
     id: "starter",
     name: "Starter",
-    price: "Starts at ₹20,000",
+    price: {
+      INR: "Starts at ₹20,000",
+      USD: "Starts at $249"
+    },
     description: "Perfect for small businesses, MVPs, and single AI automation features.",
     features: [
       "Premium Website Development",
@@ -17,7 +20,10 @@ export const pricingPlans = [
   {
     id: "professional",
     name: "Professional",
-    price: "Starts at ₹50,000",
+    price: {
+      INR: "Starts at ₹50,000",
+      USD: "Starts at $599"
+    },
     description: "Growing companies requiring custom AI workflows and integration.",
     features: [
       "AI Agent Workflows (LangGraph)",
@@ -32,7 +38,10 @@ export const pricingPlans = [
   {
     id: "enterprise",
     name: "Enterprise",
-    price: "Custom Quote",
+    price: {
+      INR: "Custom Quote",
+      USD: "Custom Quote"
+    },
     description: "Large-scale AI systems, multi-agent networks, and enterprise apps.",
     features: [
       "SaaS Platforms (full scale)",

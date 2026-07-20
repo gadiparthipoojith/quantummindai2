@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Check } from "lucide-react";
 import Link from "next/link";
 import { ScrollReveal } from "@/components/effects/scroll-reveal";
@@ -8,6 +9,8 @@ import { pricingPlans, addOns } from "@/lib/data/pricing";
 import { cn } from "@/lib/utils";
 
 export function Pricing() {
+  const [currency, setCurrency] = useState<"INR" | "USD">("INR");
+
   return (
     <section id="pricing" className="section-padding">
       <div className="container mx-auto px-4 md:px-6">
@@ -22,6 +25,36 @@ export function Pricing() {
             Fixed-price packages with clear deliverables. Custom scopes available.
           </p>
         </ScrollReveal>
+
+        {/* Currency Switcher */}
+        <div className="flex justify-center items-center gap-2 mb-12">
+          <div className="glass p-1 rounded-full border border-foreground/10 flex items-center shadow-lg">
+            <button
+              onClick={() => setCurrency("INR")}
+              type="button"
+              className={cn(
+                "rounded-full px-5 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-300",
+                currency === "INR"
+                  ? "bg-gradient-to-r from-violet-core to-cyan-pulse text-white shadow-md shadow-violet-core/25"
+                  : "text-muted-foreground hover:text-foreground bg-transparent"
+              )}
+            >
+              INR (₹)
+            </button>
+            <button
+              onClick={() => setCurrency("USD")}
+              type="button"
+              className={cn(
+                "rounded-full px-5 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-300",
+                currency === "USD"
+                  ? "bg-gradient-to-r from-violet-core to-cyan-pulse text-white shadow-md shadow-violet-core/25"
+                  : "text-muted-foreground hover:text-foreground bg-transparent"
+              )}
+            >
+              USD ($)
+            </button>
+          </div>
+        </div>
 
         <div className="grid gap-6 lg:grid-cols-3">
           {pricingPlans.map((plan, i) => (
@@ -38,7 +71,7 @@ export function Pricing() {
                   </span>
                 )}
                 <h3 className="text-xl font-semibold">{plan.name}</h3>
-                <div className="mt-3 text-3xl font-bold">{plan.price}</div>
+                <div className="mt-3 text-3xl font-bold">{plan.price[currency]}</div>
                 <p className="mt-4 mb-6 text-sm text-muted-foreground">{plan.description}</p>
                 <ul className="mb-8 flex-1 space-y-3">
                   {plan.features.map((feature) => (
