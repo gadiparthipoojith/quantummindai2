@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Linkedin, Mail, Twitter } from "lucide-react";
 import { studio } from "@/lib/data/team";
+import { Logo } from "./logo";
 
 export function Footer() {
   return (
@@ -9,9 +10,7 @@ export function Footer() {
         <div className="grid gap-12 md:grid-cols-4">
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-violet-core to-cyan-pulse text-sm font-bold text-white">
-                AF
-              </div>
+              <Logo className="h-9 w-9" />
               <span className="font-semibold">{studio.name}</span>
             </div>
             <p className="text-muted-foreground max-w-md mb-6">{studio.description}</p>

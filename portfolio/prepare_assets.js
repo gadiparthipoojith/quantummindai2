@@ -43,6 +43,26 @@ processDirectory('.open-next', (filePath) => {
             modified = true;
         }
 
+        // Fix broken Windows paths for Prisma WASM query engine
+        if (content.includes('query_engine_bg.wasm')) {
+            const projectRoot = process.cwd().replace(/\\/g, '/');
+            const targetPath = `${projectRoot}/.open-next/server-functions/default/node_modules/.prisma/client/query_engine_bg.wasm`;
+            const regex = /"[^"]+node_modules[\\.]prismaclientquery_engine_bg\.wasm"/g;
+            if (regex.test(content)) {
+                content = content.replace(regex, `"${targetPath}"`);
+                modified = true;
+            }
+        }
+        if (content.includes('query_engine_bg.postgresql.wasm')) {
+            const projectRoot = process.cwd().replace(/\\/g, '/');
+            const targetPath = `${projectRoot}/.open-next/server-functions/default/node_modules/@prisma/client/runtime/query_engine_bg.postgresql.wasm`;
+            const regex = /"[^"]+node_modules@prismaclient[\\/]runtimequery_engine_bg\.postgresql\.wasm"/g;
+            if (regex.test(content)) {
+                content = content.replace(regex, `"${targetPath}"`);
+                modified = true;
+            }
+        }
+
         if (modified) {
             fs.writeFileSync(filePath, content, 'utf8');
             console.log(`Patched references in: ${filePath}`);
@@ -192,3 +212,8 @@ foldersToCopy.forEach(folder => {
 });
 
 console.log("Assets preparation complete!");
+
+// 5. Create empty .assetsignore to bypass wrangler Pages _worker.js warning
+fs.writeFileSync(path.join(targetAssetsDir, '.assetsignore'), '', 'utf8');
+console.log("Created empty .assetsignore in assets directory");
+
