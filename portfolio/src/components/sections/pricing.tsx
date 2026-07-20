@@ -1,15 +1,42 @@
-"use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Check } from "lucide-react";
 import Link from "next/link";
 import { ScrollReveal } from "@/components/effects/scroll-reveal";
 import { Button } from "@/components/ui/button";
-import { pricingPlans, addOns } from "@/lib/data/pricing";
+import { pricingPlans } from "@/lib/data/pricing";
 import { cn } from "@/lib/utils";
+import {
+  FALLBACK_RATES,
+  fetchExchangeRates,
+  detectUserCurrency,
+  formatCurrencyValue,
+} from "@/lib/currency";
+import { CurrencySelector } from "@/components/ui/currency-selector";
 
 export function Pricing() {
-  const [currency, setCurrency] = useState<"INR" | "USD">("INR");
+  const [currency, setCurrency] = useState<string>("INR");
+  const [rates, setRates] = useState<Record<string, number>>(FALLBACK_RATES);
+
+  useEffect(() => {
+    fetchExchangeRates().then(setRates);
+
+    const stored = localStorage.getItem("selected_currency");
+    if (stored) {
+      setCurrency(stored);
+    } else {
+      detectUserCurrency().then((detected) => {
+        setCurrency(detected);
+        localStorage.setItem("selected_currency", detected);
+      });
+    }
+
+    const handleCurrencySync = () => {
+      const updated = localStorage.getItem("selected_currency");
+      if (updated) setCurrency(updated);
+    };
+    window.addEventListener("currency_changed", handleCurrencySync);
+    return () => window.removeEventListener("currency_changed", handleCurrencySync);
+  }, []);
 
   return (
     <section id="pricing" className="section-padding">
@@ -27,33 +54,15 @@ export function Pricing() {
         </ScrollReveal>
 
         {/* Currency Switcher */}
-        <div className="flex justify-center items-center gap-2 mb-12">
-          <div className="glass p-1 rounded-full border border-foreground/10 flex items-center shadow-lg">
-            <button
-              onClick={() => setCurrency("INR")}
-              type="button"
-              className={cn(
-                "rounded-full px-5 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-300",
-                currency === "INR"
-                  ? "bg-gradient-to-r from-violet-core to-cyan-pulse text-white shadow-md shadow-violet-core/25"
-                  : "text-muted-foreground hover:text-foreground bg-transparent"
-              )}
-            >
-              INR (₹)
-            </button>
-            <button
-              onClick={() => setCurrency("USD")}
-              type="button"
-              className={cn(
-                "rounded-full px-5 py-2 text-xs font-semibold uppercase tracking-wider transition-all duration-300",
-                currency === "USD"
-                  ? "bg-gradient-to-r from-violet-core to-cyan-pulse text-white shadow-md shadow-violet-core/25"
-                  : "text-muted-foreground hover:text-foreground bg-transparent"
-              )}
-            >
-              USD ($)
-            </button>
-          </div>
+        <div className="flex justify-center items-center gap-3 mb-12">
+          <CurrencySelector
+            value={currency}
+            onChange={(val) => {
+              setCurrency(val);
+              localStorage.setItem("selected_currency", val);
+              window.dispatchEvent(new Event("currency_changed"));
+            }}
+          />
         </div>
 
         <div className="grid gap-6 lg:grid-cols-3">
@@ -71,7 +80,9 @@ export function Pricing() {
                   </span>
                 )}
                 <h3 className="text-xl font-semibold">{plan.name}</h3>
-                <div className="mt-3 text-3xl font-bold">{plan.price[currency]}</div>
+                <div className="mt-3 text-3xl font-bold">
+                  {plan.basePrice ? `Starts at ${formatCurrencyValue(plan.basePrice, currency, rates)}` : "Custom Quote"}
+                </div>
                 <p className="mt-4 mb-6 text-sm text-muted-foreground">{plan.description}</p>
                 <ul className="mb-8 flex-1 space-y-3">
                   {plan.features.map((feature) => (

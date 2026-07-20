@@ -2,19 +2,19 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Calculator, Sparkles, ArrowLeft, Settings, Check, Globe } from "lucide-react";
+import { Calculator, Sparkles, ArrowLeft, Settings, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { GradientMesh } from "@/components/effects/gradient-mesh";
 import {
-  CURRENCIES,
   FALLBACK_RATES,
   fetchExchangeRates,
   detectUserCurrency,
   formatCurrencyValue,
 } from "@/lib/currency";
+import { CurrencySelector } from "@/components/ui/currency-selector";
 
 export default function CostEstimatorPage() {
   const [currency, setCurrency] = useState<string>("INR");
@@ -158,25 +158,15 @@ export default function CostEstimatorPage() {
               </div>
               <div className="flex items-center gap-3">
                 {/* Currency Switcher */}
-                <div className="flex items-center gap-2 bg-slate-900/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-foreground/10 shadow-md">
-                  <Globe className="h-3.5 w-3.5 text-violet-glow animate-pulse shrink-0" />
-                  <select
-                    value={currency}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setCurrency(val);
-                      localStorage.setItem("selected_currency", val);
-                      window.dispatchEvent(new Event("currency_changed"));
-                    }}
-                    className="bg-transparent text-slate-100 text-xxs font-bold uppercase tracking-wider cursor-pointer outline-none border-none pr-1 focus:ring-0"
-                  >
-                    {CURRENCIES.map((c) => (
-                      <option key={c.code} value={c.code} className="bg-slate-950 text-slate-100">
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <CurrencySelector
+                  value={currency}
+                  onChange={(val) => {
+                    setCurrency(val);
+                    localStorage.setItem("selected_currency", val);
+                    window.dispatchEvent(new Event("currency_changed"));
+                  }}
+                  align="right"
+                />
 
                 <Button asChild variant="outline" className="border-foreground/10 hover:bg-foreground/5 h-10">
                   <Link href="/">
