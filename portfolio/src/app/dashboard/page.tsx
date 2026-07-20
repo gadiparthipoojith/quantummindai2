@@ -1210,7 +1210,7 @@ export default function DashboardPage() {
                   /* Founder Dashboard view */
                   <>
                     {/* Founder Aggregate Metrics */}
-                    <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                       <Card className="glass border-foreground/10 p-5 bg-gradient-to-br from-violet-core/5 to-slate-900/50">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-xl bg-violet-core/10 border border-violet-core/20 flex items-center justify-center text-violet-glow flex-shrink-0">
@@ -1272,7 +1272,7 @@ export default function DashboardPage() {
                           <Sparkles className="h-5 w-5 text-violet-glow" />
                           Toggle Active Project Timeline
                         </h3>
-                        <div className="flex items-center gap-1.5 bg-foreground/5 border border-foreground/10 p-1 rounded-xl">
+                        <div className="flex flex-wrap items-center gap-1.5 bg-foreground/5 border border-foreground/10 p-1 rounded-xl">
                           {projects.map((p) => (
                             <button
                               key={p.id}
@@ -1320,9 +1320,12 @@ export default function DashboardPage() {
                                   )}
                                 </div>
                                 <div className="flex-1 pt-0.5">
-                                  <div className="flex items-center justify-between">
-                                    <h4 className="font-semibold text-sm">{step.title}</h4>
-                                    <span className={`text-xs px-2.5 py-0.5 rounded-full ${
+                                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                                    <div className="space-y-1">
+                                      <h4 className="font-semibold text-sm leading-snug">{step.title}</h4>
+                                      <p className="text-xs text-muted-foreground">Target Delivery: {step.date}</p>
+                                    </div>
+                                    <span className={`text-xs px-2.5 py-0.5 rounded-full w-fit shrink-0 ${
                                       step.status === "Completed"
                                         ? "bg-violet-core/10 text-violet-core"
                                         : step.status === "In Progress"
@@ -1332,7 +1335,6 @@ export default function DashboardPage() {
                                       {step.status}
                                     </span>
                                   </div>
-                                  <p className="text-xs text-muted-foreground mt-1">Target Delivery: {step.date}</p>
                                 </div>
                               </div>
                             ))}
@@ -1400,9 +1402,12 @@ export default function DashboardPage() {
                                   )}
                                 </div>
                                 <div className="flex-1 pt-0.5">
-                                  <div className="flex items-center justify-between">
-                                    <h4 className="font-semibold text-sm">{step.title}</h4>
-                                    <span className={`text-xs px-2.5 py-0.5 rounded-full ${
+                                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                                    <div className="space-y-1">
+                                      <h4 className="font-semibold text-sm leading-snug">{step.title}</h4>
+                                      <p className="text-xs text-muted-foreground">Target Delivery: {step.date}</p>
+                                    </div>
+                                    <span className={`text-xs px-2.5 py-0.5 rounded-full w-fit shrink-0 ${
                                       step.status === "Completed"
                                         ? "bg-violet-core/10 text-violet-core"
                                         : step.status === "In Progress"
@@ -1412,7 +1417,6 @@ export default function DashboardPage() {
                                       {step.status}
                                     </span>
                                   </div>
-                                  <p className="text-xs text-muted-foreground mt-1">Target Delivery: {step.date}</p>
                                 </div>
                               </div>
                             ))}
